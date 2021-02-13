@@ -47,16 +47,6 @@ namespace Razes2Mouse
             }
         }
 
-        private bool isTurned()
-        {
-            var localHero = EntityManager.LocalHero;
-            var angleBetween = 57 * localHero.FindRotationAngle(GameManager.MousePosition);
-            if (angleBetween < 5)
-            {
-                return true;
-            }
-            return false;
-        }
         private void OnUnitOrder(OrderAddingEventArgs e)
         {
             if (!Razes2Mouse.Value)
@@ -70,26 +60,17 @@ namespace Razes2Mouse
             }
             if (e.Order.Type == OrderType.Cast && e.Order.Ability.Id == AbilityId.nevermore_shadowraze1)
             {              
-                if (!isTurned())
-                {
-                    localHero.MoveToDirection(GameManager.MousePosition);
-                }
+                localHero.MoveToDirection(GameManager.MousePosition);
                 localHero.Spellbook.Spell1.Cast();
             }
             if (e.Order.Type == OrderType.Cast && e.Order.Ability.Id == AbilityId.nevermore_shadowraze2)
             {
-                if (!isTurned())
-                {
-                    localHero.MoveToDirection(GameManager.MousePosition);
-                }
+                localHero.MoveToDirection(GameManager.MousePosition);
                 localHero.Spellbook.Spell2.Cast();
             }
             if (e.Order.Type == OrderType.Cast && e.Order.Ability.Id == AbilityId.nevermore_shadowraze3)
             {
-                if (!isTurned())
-                {
-                    localHero.MoveToDirection(GameManager.MousePosition);
-                }
+                localHero.MoveToDirection(GameManager.MousePosition);
                 localHero.Spellbook.Spell3.Cast();
             }
         }
