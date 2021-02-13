@@ -5,21 +5,36 @@ using Divine.SDK.Extensions;
 using Divine.SDK.Managers.Update;
 
 using SharpDX;
+using System.Collections.Generic;
 
 namespace Razes2Mouse
 {
     public class SFRAZES : Bootstrapper
     {
         private MenuSwitcher DrawRazes;
-
         private MenuSwitcher Razes2Mouse;
+        private MenuSlider ColorSwitcher;
+
+        Color[] Colours = { Color.White, Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Pink, Color.Purple };
+
         protected override void OnActivate()
         {
             OrderManager.OrderAdding += OnUnitOrder;
-            RendererManager.Draw += OnDraw;
+            UpdateManager.Subscribe(8, OnDraw);
             var rootMenu = MenuManager.CreateRootMenu("SF HELPER");
+            string[] Colours = { "White", "Red", "Green", "Blue" };
             DrawRazes = rootMenu.CreateSwitcher("Draw Shadowrazes");
             Razes2Mouse = rootMenu.CreateSwitcher("Shadowrazes to mouse direction");
+            ColorSwitcher = rootMenu.CreateSlider("Colors", 0, 0, 6);
+        }
+
+        public static Vector3 InFront(Unit unit, float distance)
+        {
+            var alpha = unit.RotationRad;
+            var vector2FromPolarAngle = SharpDXExtensions.FromPolarCoordinates(1f, alpha);
+
+            var v = unit.Position + (vector2FromPolarAngle.ToVector3() * distance);
+            return new Vector3(v.X, v.Y, 0);
         }
 
         private void OnDraw()
@@ -30,6 +45,7 @@ namespace Razes2Mouse
                     ParticleManager.RemoveParticle($"DrawRaze_{i}");
                 return;
             }
+            Color Choosed = Colours[ColorSwitcher.Value];
             var localHero = EntityManager.LocalHero;
             if(localHero.Name != "npc_dota_hero_nevermore")
             {
@@ -38,7 +54,7 @@ namespace Razes2Mouse
             var razes = new[] { 200, 450, 700 };
             for (int i = 0; i < 3; i++)
             {
-                var inFront = localHero.InFront(razes[i]);
+                var inFront = InFront(localHero, razes[i]);
 
                 ParticleManager.CreateOrUpdateParticle(
                     $"DrawRaze_{i}",
@@ -46,8 +62,8 @@ namespace Razes2Mouse
                     localHero,
                     ParticleAttachment.AbsOrigin,
                     new ControlPoint(0, inFront),
-                    new ControlPoint(1, new Color(255,255,255)),
-                    new ControlPoint(2, 200, 255, 40));
+                    new ControlPoint(1, Choosed),
+                    new ControlPoint(2, 250, 255, 7));
             }
         }
 
@@ -66,16 +82,22 @@ namespace Razes2Mouse
             {              
                 localHero.MoveToDirection(GameManager.MousePosition);
                 localHero.Spellbook.Spell1.Cast();
+                e.Process = false;
+                return;
             }
             if (e.Order.Type == OrderType.Cast && e.Order.Ability.Id == AbilityId.nevermore_shadowraze2)
             {
                 localHero.MoveToDirection(GameManager.MousePosition);
                 localHero.Spellbook.Spell2.Cast();
+                e.Process = false;
+                return;
             }
             if (e.Order.Type == OrderType.Cast && e.Order.Ability.Id == AbilityId.nevermore_shadowraze3)
             {
                 localHero.MoveToDirection(GameManager.MousePosition);
                 localHero.Spellbook.Spell3.Cast();
+                e.Process = false;
+                return;
             }
         }
     }
