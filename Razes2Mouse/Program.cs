@@ -16,13 +16,13 @@ namespace Razes2Mouse
         protected override void OnActivate()
         {
             OrderManager.OrderAdding += OnUnitOrder;
-            GameManager.IngameUpdate += OnUpdate;
+            RendererManager.Draw += OnDraw;
             var rootMenu = MenuManager.CreateRootMenu("SF HELPER");
             DrawRazes = rootMenu.CreateSwitcher("Draw Shadowrazes");
             Razes2Mouse = rootMenu.CreateSwitcher("Shadowrazes to mouse direction");
         }
 
-        private void OnUpdate()
+        private void OnDraw()
         {
             if (!DrawRazes.Value)
             {
@@ -31,6 +31,10 @@ namespace Razes2Mouse
                 return;
             }
             var localHero = EntityManager.LocalHero;
+            if(localHero.Name != "npc_dota_hero_nevermore")
+            {
+                return;
+            }
             var razes = new[] { 200, 450, 700 };
             for (int i = 0; i < 3; i++)
             {
