@@ -1,0 +1,17 @@
+C:\Users\admin\source\repos\Razes2Mouse\bin\Release\Razes2Mouse.dll.config
+C:\Users\admin\source\repos\Razes2Mouse\bin\Release\Razes2Mouse.dll
+C:\Users\admin\source\repos\Razes2Mouse\bin\Release\Divine.dll
+C:\Users\admin\source\repos\Razes2Mouse\bin\Release\Divine.Menu.dll
+C:\Users\admin\source\repos\Razes2Mouse\bin\Release\Divine.SDK.dll
+C:\Users\admin\source\repos\Razes2Mouse\bin\Release\Divine.Zero.dll
+C:\Users\admin\source\repos\Razes2Mouse\bin\Release\DotNetZip.dll
+C:\Users\admin\source\repos\Razes2Mouse\bin\Release\Newtonsoft.Json.dll
+C:\Users\admin\source\repos\Razes2Mouse\bin\Release\SharpDX.Direct2D1.dll
+C:\Users\admin\source\repos\Razes2Mouse\bin\Release\SharpDX.Direct3D11.dll
+C:\Users\admin\source\repos\Razes2Mouse\bin\Release\SharpDX.dll
+C:\Users\admin\source\repos\Razes2Mouse\bin\Release\SharpDX.DXGI.dll
+C:\Users\admin\source\repos\Razes2Mouse\bin\Release\SharpDX.Mathematics.dll
+C:\Users\admin\source\repos\Razes2Mouse\obj\Release\Razes2Mouse.csprojAssemblyReference.cache
+C:\Users\admin\source\repos\Razes2Mouse\obj\Release\Razes2Mouse.csproj.CoreCompileInputs.cache
+C:\Users\admin\source\repos\Razes2Mouse\obj\Release\Razes2Mouse.csproj.CopyComplete
+C:\Users\admin\source\repos\Razes2Mouse\obj\Release\Razes2Mouse.dll
