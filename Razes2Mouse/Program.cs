@@ -3,9 +3,9 @@ using Divine.Menu;
 using Divine.Menu.Items;
 using Divine.SDK.Extensions;
 using Divine.SDK.Managers.Update;
+using System;
 
 using SharpDX;
-using System.Collections.Generic;
 
 namespace Razes2Mouse
 {
@@ -69,36 +69,19 @@ namespace Razes2Mouse
 
         private void OnUnitOrder(OrderAddingEventArgs e)
         {
-            if (!Razes2Mouse.Value)
-            {
-                return;
-            }
+            if (!Razes2Mouse.Value) { return; }
             var localHero = EntityManager.LocalHero;
-            if (localHero.Name != "npc_dota_hero_nevermore" || e.IsCustom)
-            {
-                return;
-            }
-            if (e.Order.Type == OrderType.Cast && e.Order.Ability.Id == AbilityId.nevermore_shadowraze1)
+            Ability order = e.Order.Ability;
+            if (localHero.Name != "npc_dota_hero_nevermore" || e.IsCustom) { return; }
+            if (e.Order.Type == OrderType.Cast && (order.Id == AbilityId.nevermore_shadowraze1 ||
+                                                   order.Id == AbilityId.nevermore_shadowraze2 ||
+                                                   order.Id == AbilityId.nevermore_shadowraze3))                        
             {              
                 localHero.MoveToDirection(GameManager.MousePosition);
-                localHero.Spellbook.Spell1.Cast();
-                e.Process = false;
-                return;
-            }
-            if (e.Order.Type == OrderType.Cast && e.Order.Ability.Id == AbilityId.nevermore_shadowraze2)
-            {
-                localHero.MoveToDirection(GameManager.MousePosition);
-                localHero.Spellbook.Spell2.Cast();
-                e.Process = false;
-                return;
-            }
-            if (e.Order.Type == OrderType.Cast && e.Order.Ability.Id == AbilityId.nevermore_shadowraze3)
-            {
-                localHero.MoveToDirection(GameManager.MousePosition);
-                localHero.Spellbook.Spell3.Cast();
-                e.Process = false;
-                return;
+                order.Cast();
+                e.Process = true;
             }
         }
+
     }
 }
