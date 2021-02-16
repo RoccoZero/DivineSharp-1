@@ -3,7 +3,6 @@ using Divine.Menu;
 using Divine.Menu.Items;
 using Divine.SDK.Extensions;
 using Divine.SDK.Managers.Update;
-using System;
 
 using SharpDX;
 
@@ -22,7 +21,6 @@ namespace Razes2Mouse
             OrderManager.OrderAdding += OnUnitOrder;
             UpdateManager.Subscribe(8, OnDraw);
             var rootMenu = MenuManager.CreateRootMenu("SF HELPER");
-            string[] Colours = { "White", "Red", "Green", "Blue" };
             DrawRazes = rootMenu.CreateSwitcher("Draw Shadowrazes");
             Razes2Mouse = rootMenu.CreateSwitcher("Shadowrazes to mouse direction");
             ColorSwitcher = rootMenu.CreateSlider("Colors", 0, 0, 6);
@@ -73,15 +71,14 @@ namespace Razes2Mouse
             var localHero = EntityManager.LocalHero;
             Ability order = e.Order.Ability;
             if (localHero.Name != "npc_dota_hero_nevermore" || e.IsCustom) { return; }
-            if (e.Order.Type == OrderType.Cast && (order.Id == AbilityId.nevermore_shadowraze1 ||
-                                                   order.Id == AbilityId.nevermore_shadowraze2 ||
-                                                   order.Id == AbilityId.nevermore_shadowraze3))                        
-            {              
+            if (e.Order.Type == OrderType.Cast && (order.Id == AbilityId.nevermore_shadowraze1 
+                                                   || order.Id == AbilityId.nevermore_shadowraze2 
+                                                   || order.Id == AbilityId.nevermore_shadowraze3))                        
+            {
                 localHero.MoveToDirection(GameManager.MousePosition);
                 order.Cast();
-                e.Process = true;
+                e.Process = true;     
             }
         }
-
     }
 }
