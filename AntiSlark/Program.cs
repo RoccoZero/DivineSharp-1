@@ -4,9 +4,8 @@ using Divine.Menu.Items;
 using Divine.SDK.Extensions;
 using Divine.SDK.Managers.Update;
 using SharpDX;
-using System;
+
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace AntiSlark
@@ -15,7 +14,6 @@ namespace AntiSlark
     {
         private Vector3 PosOfPounce;
         private float leashradius;
-        private float hullradius;
         private Vector3 PosForBranch;
 
         private Hero localHero;
@@ -34,11 +32,10 @@ namespace AntiSlark
             var antiPounceRoot = rootMenu.CreateMenu("AntiPounce");
             enableAS = antiPounceRoot.CreateSwitcher("Enable/Disable" , false);
             useIB = antiPounceRoot.CreateSwitcher("Use IRONBRANCH", false);
-            useHW = antiPounceRoot.CreateSwitcher("Use BUSHWHACK", false);
+            useHW = antiPounceRoot.CreateSwitcher("Use ACORN SHOT", false);
             useIWT = antiPounceRoot.CreateSwitcher("Use IRONWOOD TREE", false);
 
             localHero = EntityManager.LocalHero;
-            hullradius = localHero.HullRadius;
         }
 
         private async void GameManager_IngameUpdate()
@@ -68,6 +65,5 @@ namespace AntiSlark
                 leashradius = Ability.GetAbilityDataById(AbilityId.slark_pounce).AbilitySpecialData.FirstOrDefault(x => x.Name == "leash_radius").Value;
             });
         }
-
     }
 }
