@@ -26,7 +26,7 @@ namespace AntiSlark
         protected override void OnActivate()
         {
             ParticleManager.ParticleAdded += ParticleManager_ParticleAdded;
-            UpdateManager.Subscribe(100, GameManager_IngameUpdate);
+            UpdateManager.Subscribe(50, GameManager_IngameUpdate);
 
             var rootMenu = MenuManager.CreateRootMenu("Utility");
             var antiPounceRoot = rootMenu.CreateMenu("AntiPounce");
