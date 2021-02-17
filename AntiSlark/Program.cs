@@ -45,10 +45,10 @@ namespace AntiSlark
                 PosForBranch = localHero.Position.Extend(PosOfPounce, 15);
                 if (useIWT.Value == true && localHero.Inventory.NeutralItem != null && localHero.Inventory.NeutralItem.Id == AbilityId.item_ironwood_tree && localHero.Inventory.NeutralItem.Cooldown == 0)
                     localHero.Inventory.NeutralItem.Cast(PosForBranch);
-                await Task.Delay(50); 
+                await Task.Delay(25); 
                 if (useIB.Value == true && localHero.HasModifier("modifier_slark_pounce_leash") && localHero.Inventory.MainItems.Any(x => x.Id == AbilityId.item_branches))
                     localHero.Inventory.MainItems.First(x => x.Id == AbilityId.item_branches).Cast(PosForBranch);
-                await Task.Delay(100);
+                await Task.Delay(50);
                 if (localHero.Name == "npc_dota_hero_hoodwink" && useHW.Value == true && localHero.HasModifier("modifier_slark_pounce_leash") && localHero.Spellbook.Spell1.Level > 0 && localHero.Spellbook.Spell1.Cooldown == 0)
                     localHero.Spellbook.Spell1.Cast(PosForBranch);
 
