@@ -4,7 +4,7 @@ using Divine.Menu.Items;
 using Divine.SDK.Extensions;
 using Divine.SDK.Managers.Update;
 using SharpDX;
-
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,11 +22,15 @@ namespace AntiSlark
         private MenuSwitcher useIB;
         private MenuSwitcher useHW;
         private MenuSwitcher useIWT;
+        private Task[] tasks;
+
+        
 
         protected override void OnActivate()
         {
+
             ParticleManager.ParticleAdded += ParticleManager_ParticleAdded;
-            UpdateManager.Subscribe(50, GameManager_IngameUpdate);
+            UpdateManager.Subscribe(140, GameManager_IngameUpdate);
 
             var rootMenu = MenuManager.CreateRootMenu("Utility");
             var antiPounceRoot = rootMenu.CreateMenu("AntiPounce");
@@ -38,20 +42,33 @@ namespace AntiSlark
             localHero = EntityManager.LocalHero;
         }
 
-        private async void GameManager_IngameUpdate()
+        private int GetReason()
         {
-            if (enableAS.Value == true && localHero.HasModifier("modifier_slark_pounce_leash") && localHero.Distance2D(PosOfPounce) < leashradius + 10 && localHero.Distance2D(PosOfPounce) > leashradius - 10)
-            {
-                PosForBranch = localHero.Position.Extend(PosOfPounce, 15);
-                if (useIWT.Value == true && localHero.Inventory.NeutralItem != null && localHero.Inventory.NeutralItem.Id == AbilityId.item_ironwood_tree && localHero.Inventory.NeutralItem.Cooldown == 0)
-                    localHero.Inventory.NeutralItem.Cast(PosForBranch);
-                await Task.Delay(25); 
-                if (useIB.Value == true && localHero.HasModifier("modifier_slark_pounce_leash") && localHero.Inventory.MainItems.Any(x => x.Id == AbilityId.item_branches))
-                    localHero.Inventory.MainItems.First(x => x.Id == AbilityId.item_branches).Cast(PosForBranch);
-                await Task.Delay(50);
-                if (localHero.Name == "npc_dota_hero_hoodwink" && useHW.Value == true && localHero.HasModifier("modifier_slark_pounce_leash") && localHero.Spellbook.Spell1.Level > 0 && localHero.Spellbook.Spell1.Cooldown == 0)
-                    localHero.Spellbook.Spell1.Cast(PosForBranch);
+            if (useIWT.Value == true
+                && localHero.Inventory.NeutralItem != null
+                && localHero.Inventory.NeutralItem.Id == AbilityId.item_ironwood_tree
+                && localHero.Inventory.NeutralItem.Cooldown == 0)
+                return 1; 
+            if (useIB.Value == true
+                && localHero.Inventory.MainItems.Any(x => x.Id == AbilityId.item_branches))
+                return 2;
+            if (localHero.Name == "npc_dota_hero_hoodwink"
+                && useHW.Value == true
+                && localHero.Spellbook.Spell1.Level > 0
+                && localHero.Spellbook.Spell1.Cooldown == 0)
+                return 3; 
+            return 0;
+        }
 
+        private  void GameManager_IngameUpdate()
+        {
+            if (enableAS.Value == true && localHero.HasModifier("modifier_slark_pounce_leash") && localHero.Distance2D(PosOfPounce) < leashradius  && localHero.Distance2D(PosOfPounce) > leashradius - 16)
+            {
+                PosForBranch = localHero.Position.Extend(PosOfPounce, 16);
+                if (GetReason() == 0) return;
+                if (GetReason() == 1) { localHero.Inventory.NeutralItem.Cast(PosForBranch);  return; }
+                if (GetReason() == 2) { localHero.Inventory.MainItems.First(x => x.Id == AbilityId.item_branches).Cast(PosForBranch); return; }
+                else { localHero.Spellbook.Spell1.Cast(PosForBranch); return; }
             }
         }
 
