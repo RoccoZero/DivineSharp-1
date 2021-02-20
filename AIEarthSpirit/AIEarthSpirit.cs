@@ -432,7 +432,7 @@ namespace EarthSpirit
                     Hero enemy = null;
                     Hero hero = null;
                     enemy = EntityManager.GetEntities<Hero>().Where(x => x.IsEnemy(myHero) && x.Distance2D(my_hero_pos) < 200 && x.IsVisible && x.IsAlive).OrderBy(x => x.Distance2D(my_hero_pos)).FirstOrDefault();
-                    hero = EntityManager.GetEntities<Hero>().Where(x => x.Position != my_hero_pos && x.Health > 0.7 && x.IsAlly(myHero) && x.IsAlive && myHero.Distance2D(x) < 1200).OrderByDescending(x => x.Health).FirstOrDefault();
+                    hero = EntityManager.GetEntities<Hero>().Where(x => x.Position != my_hero_pos && x.HealthPercent() > 0.7 && x.IsAlly(myHero) && x.IsAlive && myHero.Distance2D(x) < 1200).OrderByDescending(x => x.Health).FirstOrDefault();
 
                     if (enemy != null && hero != null)
                     {

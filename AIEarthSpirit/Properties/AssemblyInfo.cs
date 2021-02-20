@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // Общие сведения об этой сборке предоставляются следующим набором
 // набора атрибутов. Измените значения этих атрибутов для изменения сведений,
 // связанные со сборкой.
-[assembly: AssemblyTitle("AI Earth Spirit")]
+[assembly: AssemblyTitle("AIEarthSpirit")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("AI Earth Spirit")]
+[assembly: AssemblyProduct("AIEarthSpirit")]
 [assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Следующий GUID служит для идентификации библиотеки типов, если этот проект будет видимым для COM
-[assembly: Guid("76664224-6f62-4db0-8eb8-93a69dd655c6")]
+[assembly: Guid("7cbbfc7f-b38f-4398-ac90-f65fd096bf9b")]
 
 // Сведения о версии сборки состоят из указанных ниже четырех значений:
 //
