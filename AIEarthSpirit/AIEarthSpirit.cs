@@ -35,15 +35,14 @@ namespace EarthSpirit
             enchant_time = 0;
             kick_time = 0;
             myHero = EntityManager.LocalHero;
-
-            InputManager.KeyDown += OnInputManagerKeyDown;
-            InputManager.KeyUp += OnInputManagerKeyUp;
-            OrderManager.OrderAdding += OnUnitOrder;
             if (myHero.HeroId == HeroId.npc_dota_hero_earth_spirit)
             {
                 var rootMenu = MenuManager.CreateRootMenu("AI Earth spirit");
                 AutoStone = rootMenu.CreateSwitcher("Auto Stone if W", false);
                 GameManager.IngameUpdate += OnUpdate;
+                InputManager.KeyDown += OnInputManagerKeyDown;
+                InputManager.KeyUp += OnInputManagerKeyUp;
+                OrderManager.OrderAdding += OnUnitOrder;
                 holdKey = rootMenu.CreateHoldKey("Combo key", Key.None);
                 holdKey.ValueChanged += (sender, e) => isComboKeyPressed = e.Value;
             }
@@ -85,7 +84,9 @@ namespace EarthSpirit
                 myHero.Spellbook.Spell4.Cast(extendet);
                 return;
             }
-            if (e.Order.Ability == pull)
+            if (e.Order.Ability == pull && !EntityManager.GetEntities<Entity>()
+                                                              .Where(x => x.Name == "npc_dota_earth_spirit_stone" && mousePos.Distance2D(x.Position) < 200)
+                                                              .Any())
             {
                 myHero.Spellbook.Spell4.Cast(mousePos);
                 return;
