@@ -2,6 +2,7 @@
 using Divine.Menu;
 using Divine.Menu.Items;
 using Divine.SDK.Extensions;
+using Divine.SDK.Helpers;
 using Divine.SDK.Managers.Update;
 using SharpDX;
 using System;
@@ -14,9 +15,9 @@ namespace EarthSpirit
     {
         private Hero myHero;
 
-
         private MenuHoldKey holdKey;
         private MenuSwitcher AutoStone;
+        private MenuSlider autoUltiCount;
         private bool isComboKeyPressed;
 
         private float stone_time;
@@ -25,7 +26,9 @@ namespace EarthSpirit
         private float enchant_time;
         private float kick_time;
 
-        private bool IsCtrlKey;
+        private bool IsIgnoreInput = false;
+
+        private readonly Sleeper SleeperOrder = new Sleeper();
 
         protected override void OnActivate()
         {
@@ -39,32 +42,51 @@ namespace EarthSpirit
             {
                 var rootMenu = MenuManager.CreateRootMenu("AI Earth spirit");
                 AutoStone = rootMenu.CreateSwitcher("Auto Stone if W", false);
-                GameManager.IngameUpdate += OnUpdate;
-                InputManager.KeyDown += OnInputManagerKeyDown;
-                InputManager.KeyUp += OnInputManagerKeyUp;
-                OrderManager.OrderAdding += OnUnitOrder;
+                autoUltiCount = rootMenu.CreateSlider("Enemyes for ult", 3, 0, 5);
                 holdKey = rootMenu.CreateHoldKey("Combo key", Key.None);
+                GameManager.IngameUpdate += OnUpdate;
+                InputManager.KeyUp += OnInputManagerKeyUpCtrl;
+                InputManager.KeyDown += OnInputManagerKeyDownCtrl;
+                InputManager.KeyUp += OnInputManagerKeyUpAlt;
+                InputManager.KeyDown += OnInputManagerKeyDownAlt;
+                OrderManager.OrderAdding += OnUnitOrder;
                 holdKey.ValueChanged += (sender, e) => isComboKeyPressed = e.Value;
             }
         }
 
-        private void OnInputManagerKeyDown(KeyEventArgs e)
+        private void OnInputManagerKeyDownAlt(KeyEventArgs e)
+        {
+            if (e.Key != Key.LeftAlt)
+                return;
+            IsIgnoreInput = true;
+        }
+
+        private void OnInputManagerKeyUpAlt(KeyEventArgs e)
+        {
+            if (e.Key != Key.LeftAlt)
+                return;
+            IsIgnoreInput = false;
+        }
+
+        private void OnInputManagerKeyDownCtrl(KeyEventArgs e)
         {
             if (e.Key != Key.LeftCtrl)
                 return;
-            IsCtrlKey = true;
+            IsIgnoreInput = true;
         }
 
-        private void OnInputManagerKeyUp(KeyEventArgs e)
+        private void OnInputManagerKeyUpCtrl(KeyEventArgs e)
         {
             if (e.Key != Key.LeftCtrl)
                 return;
-            IsCtrlKey = false;
+            IsIgnoreInput = false;
         }
-
         private void OnUnitOrder(OrderAddingEventArgs e)
         {
-            if (e.IsCustom || IsCtrlKey == true) return;
+            if (e.IsCustom || IsIgnoreInput)
+            {
+                return;
+            }
             Ability boulSmash = myHero.Spellbook.Spell1;
             Ability pull = myHero.Spellbook.Spell3;
             Ability roll = myHero.Spellbook.Spell2;
@@ -93,8 +115,22 @@ namespace EarthSpirit
             }
             if (AutoStone.Value && e.Order.Ability == roll)
             {
+                if (myHero.Distance2D(mousePos) > 1600)
+                {
+                    myHero.Stop();
+                    myHero.Move(mousePos);
+                    return;
+                }
                 if (!HasStoneBetween(myHero, myHero.Position, mousePos))
-                    PlaceRockInFront(myHero);
+                {
+                    myHero.MoveToDirection(mousePos);
+                    Vector3 stonePos = myHero.Position.Extend(mousePos, 50);
+                    SleeperOrder.Sleep(650);
+                    UpdateManager.BeginInvoke(300, () =>
+                    {
+                        myHero.Spellbook.Spell4.Cast(stonePos);
+                    });
+                }
                 return;
             }
             e.Process = true;
@@ -115,7 +151,7 @@ namespace EarthSpirit
                                        .OrderBy(x => x.Distance2D(myHero)).FirstOrDefault();
             if (tower != null)
                 return tower;
-            return default;
+            return null;
         }
 
         private static Hero GetNearestHeroToCursor()
@@ -140,6 +176,13 @@ namespace EarthSpirit
                 || hero.HasModifier("modifier_axe_berserkers_call")
                 || hero.HasModifier("modifier_faceless_void_chronosphere_freeze")
                 || hero.HasModifier("modifier_bashed"))
+                return true;
+            return false;
+        }
+
+        private static bool IsCastOrChan(Hero hero)
+        {
+            if (hero.IsChanneling() || hero.Spellbook.MainSpells.Where(x => x.IsInAbilityPhase).Any())
                 return true;
             return false;
         }
@@ -198,13 +241,16 @@ namespace EarthSpirit
             return base_speed + bonus_speed;
         }
 
-        private static void PlaceRockInFront(Hero myHero)
+        private void PlaceRockInFront(Hero myHero)
         {
             if (myHero == null)
                 return;
             Ability stone = myHero.Spellbook.GetSpellById(AbilityId.earth_spirit_stone_caller);
-            if (stone != null && stone.IsValid)
+            if (stone != null && stone.IsValid && !SleeperOrder.Sleeping)
+            {
                 stone.Cast(InFront(myHero, 100));
+                SleeperOrder.Sleep(70);
+            }
         }
 
         private static bool HasStoneInRadius(Hero myHero, Vector3 pos, float radius)
@@ -212,7 +258,7 @@ namespace EarthSpirit
             if (pos == null || radius == 0) return false;
 
             bool stones = false;
-            stones = EntityManager.GetEntities<Entity>().Where(x => x.Name == "npc_dota_earth_spirit_stone" && x.Distance2D(pos) < radius).Any();
+            stones = EntityManager.GetEntities<Entity>().Where(x => x.Name == "npc_dota_earth_spirit_stone" && x.Distance2D(pos) < radius && x.IsAlive && x.IsValid).Any();
             if (stones == true)
                 return true;
             return false;
@@ -227,7 +273,7 @@ namespace EarthSpirit
             float dis = pos1.Distance2D(pos2);
             int num = (int)Math.Floor(dis / radius);
 
-            for (int i = 0; i < num + 1; i++)
+            for (int i = 0; i < num; i++)
             {
                 Vector3 mid = pos1.Extend(pos2, radius * i);
                 if (HasStoneInRadius(myHero, mid, radius))
@@ -263,8 +309,33 @@ namespace EarthSpirit
             }
             return false;
         }
+
+        private static bool HasTwoAlliesBehind(Hero myHero, Hero enemy)
+        {
+            if (enemy == null || myHero == null)
+                return false;
+            Vector3 postition = myHero.Position.Extend(enemy.Position, enemy.Distance2D(myHero) + 1700);
+            Hero[] allies = EntityManager.GetEntities<Hero>().Where(x => x.IsAlly(myHero) && x.Distance2D(postition) < 700 && x.IsAlive).ToArray();
+            if (allies != null && allies.Length > 1)
+                return true;
+            return false;
+        }
+
+        private static Hero AlliesBehind(Hero myHero, Hero enemy)
+        {
+            if (enemy == null || myHero == null)
+                return null;
+            Vector3 postition = myHero.Position.Extend(enemy.Position, enemy.Distance2D(myHero) + 1700);
+            Hero allie = EntityManager.GetEntities<Hero>().Where(x => x.IsAlly(myHero) && x.Distance2D(postition) < 700 && x.IsAlive).FirstOrDefault();
+            if (allie != null)
+                return allie;
+            return null;
+        }
+
+
         private void OnUpdate()
         {
+
             float myMana = myHero.Mana;
             bool AghanimsBuffed = false;
             if (myHero.HasAghanimsScepter())
@@ -278,7 +349,7 @@ namespace EarthSpirit
             Ability enchant = myHero.Spellbook.GetSpellById(AbilityId.earth_spirit_petrify);
 
             if (roll.IsInAbilityPhase)
-                kick_time_delay_until += GameManager.GameTime + 1;
+                kick_time_delay_until += GameManager.GameTime + 0.35f;
 
             Ability stone = myHero.Spellbook.GetSpellById(AbilityId.earth_spirit_stone_caller);
             Ability bonus_talent_roll_range = myHero.Spellbook.GetSpellById(AbilityId.special_bonus_unique_earth_spirit_4);
@@ -309,9 +380,12 @@ namespace EarthSpirit
             if (PlaceStoneTime != 0 && GameManager.GameTime > PlaceStoneTime)
             {
                 PlaceStoneTime = 0;
-                if (stone != null && stone_ready)
+                if (stone != null && stone_ready && myHero.Distance2D(nearestHero) > 300)
                     if (isComboKeyPressed)
                         PlaceRockInFront(myHero);
+                    else if (stone != null && stone_ready && myHero.Distance2D(nearestHero) < 300 && IsCastOrChan(nearestHero))
+                        if (isComboKeyPressed)
+                            PlaceRockInFront(myHero);
             }
 
             roll_range = 800;
@@ -323,37 +397,67 @@ namespace EarthSpirit
                 stone_roll_range += 250;
             }
 
-            // automatically kick enchanted enemy heroes into towers
-            // не делай со
-
-            if (kick_ready && GameManager.GameTime > enchant_time && enchant_time > 0 && GameManager.GameTime > kick_time)
+            // autoulti
+            if (ult_ready && EntityManager.GetEntities<Hero>().Where(x => x.Distance2D(my_hero_pos) < 300 && x.IsEnemy(myHero) && x.IsAlive && x.IsVisible).Count() >= autoUltiCount.Value)
             {
-                enchant_time = 0;
-                Tower nearest2HeroTower = GetNearestAlliedTowerToMyHero(myHero);
-                if (nearest2HeroTower != null || nearest2HeroTower != default)
+                if (autoUltiCount >= 1 && !SleeperOrder.Sleeping)
                 {
-                    Vector3 target = nearestHero.Position.Extend(nearest2HeroTower.Position, (nearestHero.Distance2D(nearest2HeroTower) / 4));
-                    kick.Cast(target);
-                    kick_time = GameManager.GameTime + 0.1f;
+                    ult.Cast();
+                    SleeperOrder.Sleep(70);
                 }
             }
 
+            // automatically kick enchanted enemy heroes into towers
+
+            if (kick_ready && GetNearestAlliedTowerToMyHero(myHero) != null && GameManager.GameTime > enchant_time && enchant_time > 0 && GameManager.GameTime > kick_time)
+            {
+                enchant_time = 0;
+                Tower nearest2HeroTower = GetNearestAlliedTowerToMyHero(myHero);
+                if (nearest2HeroTower != null || nearest2HeroTower != default && nearestHero != null)
+                {
+                    Vector3 target = nearestHero.Position.Extend(nearest2HeroTower.Position, (nearestHero.Distance2D(nearest2HeroTower) / 4));
+                    if (target != null && !SleeperOrder.Sleeping)
+                    {
+                        kick.Cast(target);
+                        kick_time = GameManager.GameTime + 0.1f;
+                        SleeperOrder.Sleep(70);
+                    }
+                }
+            }
+
+            // automatically kick enchanted enemy heroes into ally
+
+            /*if (kick_ready && HasTwoAlliesBehind(myHero, nearestHero) == true && GameManager.GameTime > enchant_time && enchant_time > 0 && GameManager.GameTime > kick_time)
+            {
+                enchant_time = 0;
+                if (HasTwoAlliesBehind(myHero, nearestHero) && !SleeperOrder.Sleeping)
+                {
+                    kick.Cast(nearestHero);
+                    kick_time = GameManager.GameTime + 0.1f;
+                    SleeperOrder.Sleep(70);
+                }
+            }*/
+
             if (isComboKeyPressed && nearestHero != null)
-                if (roll_ready && IsPositionInRange(myHero, nearestHero.Position, stone_roll_range))
+            {
+                if (roll_ready && IsPositionInRange(myHero, nearestHero.Position, stone_roll_range) && !SleeperOrder.Sleeping)
                 {
                     float distance2enemy = myHero.Distance2D(nearestHero.Position);
                     Vector3 enemyPos = GetPredictedPosition(nearestHero, (distance2enemy / 1800) + 0.6f);
                     roll.Cast(enemyPos);
+                    SleeperOrder.Sleep(70);
+                    kick_time = GameManager.GameTime + 1.25f;
 
                     if (!HasStoneBetween(myHero, my_hero_pos, nearestHero.Position))
                         PlaceStoneTime = GameManager.GameTime + 0.45f;
                 }
+            }
 
             bool inRange = EntityManager.GetEntities<Hero>().Where(x => !x.IsAlly(myHero) && x.Distance2D(myHero) < 2100).Any();
             if (inRange == true)
             {
                 // automatically silence enemies with existing remnants
-                if (pull_ready)
+                if (pull_ready && isComboKeyPressed)
                 {
                     Hero[] enemyes = null;
                     enemyes = EntityManager.GetEntities<Hero>()
@@ -368,11 +472,26 @@ namespace EarthSpirit
                             foreach (var stones in unitsAround)
                             {
                                 if (stones != null && stones.Name == "npc_dota_earth_spirit_stone")
-                                    if (HasEnemyHeroBetween(myHero, my_hero_pos, stones.Position, 150))
+                                    if (HasEnemyHeroBetween(myHero, my_hero_pos, stones.Position, 150) && !SleeperOrder.Sleeping)
+                                    {
                                         pull.Cast(stones.Position);
+                                        SleeperOrder.Sleep(70);
+                                    }
                             }
                         }
+                    }
+                }
 
+                //silence 
+                if (pull_ready && nearestHero != null && stone_time < GameManager.GameTime)
+                {
+                    Hero enemy = nearestHero;
+                    if (!HasStoneInRadius(enemy, enemy.Position, 500) && IsCastOrChan(enemy) && stone_ready && !SleeperOrder.Sleeping)
+                    {
+                        stone.Cast(enemy.Position);
+                        stone_time = GameManager.GameTime + 0.4f;
+                        pull.Cast(enemy.Position);
+                        SleeperOrder.Sleep(70);
                     }
                 }
 
@@ -388,43 +507,56 @@ namespace EarthSpirit
                     {
                         float dieTime = enemy.GetModifierByName("modifier_earth_spirit_magnetize").DieTime;
                         if (dieTime - GameManager.GameTime < 2 && dieTime - GameManager.GameTime > 0.4)
-                            if (stone_ready && GameManager.GameTime > stone_time)
+                            if (stone_ready && GameManager.GameTime > stone_time && !SleeperOrder.Sleeping)
                             {
                                 stone.Cast(enemy.Position);
                                 stone_time = GameManager.GameTime + 1;
+                                SleeperOrder.Sleep(70);
                                 return;
                             }
                     }
                 }
 
                 // automatically kick enemy heroes into your towers
-                if (kick_ready && GameManager.GameTime > enchant_time && GameManager.GameTime > kick_time)
+                if (kick_ready && GameManager.GameTime > kick_time)
                 {
                     Hero enemy = null;
                     Tower tower = null;
-                    enemy = EntityManager.GetEntities<Hero>().Where(x => x.IsEnemy(myHero) && x.IsVisible && x.IsValid && x.Distance2D(my_hero_pos) < 200).OrderBy(x => x.Distance2D(myHero)).FirstOrDefault();
+                    enemy = EntityManager.GetEntities<Hero>().Where(x => x.IsEnemy(myHero) && x.IsVisible && x.IsAlive && x.Distance2D(my_hero_pos) < 200).OrderBy(x => x.Distance2D(myHero)).FirstOrDefault();
                     tower = GetNearestAlliedTowerToMyHero(myHero);
-                    if (tower != null && enemy != null)
+                    if (enemy != null && tower != null)
                     {
                         Vector3 goodPoint = tower.Position.Extend(enemy.Position, tower.Distance2D(enemy) + 330);
-                        if (enchant_ready && myHero.Distance2D(goodPoint) < 60)
+                        if (enchant_ready && goodPoint != null && tower != null && myHero.Distance2D(goodPoint) < 60 && !SleeperOrder.Sleeping)
                         {
                             enchant.Cast(enemy);
                             enchant_time = GameManager.GameTime + 0.35f;
+                            SleeperOrder.Sleep(70);
                         }
-                        else if (myHero.Distance2D(goodPoint) < 100)
+                        else if (myHero.Distance2D(goodPoint) < 120 && !SleeperOrder.Sleeping)
                         {
                             if (enchant_ready)
                             {
                                 enchant.Cast(enemy);
                                 enchant_time = GameManager.GameTime + 0.35f;
+                                SleeperOrder.Sleep(70);
                             }
-                            else kick.Cast(enemy);
+                            else
                             {
                                 kick.Cast(enemy);
                                 kick_time = GameManager.GameTime + 0.1f;
+                                SleeperOrder.Sleep(70);
                             }
                         }
+                    }
+                }
+
+                if (kick_ready && GameManager.GameTime > enchant_time && nearestHero != null && HasTwoAlliesBehind(myHero, nearestHero))
+                {
+                    if (myHero.Distance2D(nearestHero) < 200 && nearestHero.HasModifier("modifier_earthspirit_petrify") && !SleeperOrder.Sleeping)
+                    {
+                        kick.Cast(AlliesBehind(myHero, nearestHero));
+                        SleeperOrder.Sleep(70);
                     }
                 }
 
@@ -438,14 +570,15 @@ namespace EarthSpirit
                     if (enemy != null && hero != null)
                     {
                         Vector3 goodPoint = hero.Position.Extend(enemy.Position, hero.Distance2D(enemy) + 180);
-                        if (enchant_ready && myHero.Distance2D(goodPoint) < 60 && myHero.Distance2D(hero) > 800)
+                        if (enchant_ready && myHero.Distance2D(goodPoint) < 60 && myHero.Distance2D(hero) > 800 && !SleeperOrder.Sleeping)
                         {
                             enchant.Cast(enemy);
                             enchant_time = GameManager.GameTime + 0.35f;
+                            SleeperOrder.Sleep(70);
                         }
-                        else if (myHero.Distance2D(goodPoint) < 80 && myHero.Distance2D(hero) > 350)
+                        else if (myHero.Distance2D(goodPoint) < 80 && myHero.Distance2D(hero) > 350 && !SleeperOrder.Sleeping)
                         {
-                            if (enchant_ready)
+                            if (enchant_ready || enchant_ready)
                             {
                                 enchant.Cast(enemy);
                                 enchant_time = GameManager.GameTime + 0.35f;
@@ -455,30 +588,42 @@ namespace EarthSpirit
                                 kick.Cast(enemy);
                                 kick_time = GameManager.GameTime + 0.1f;
                             }
+
+                            SleeperOrder.Sleep(70);
                         }
                     }
                 }
 
                 // auto 1spell
-                if (kick_ready && GameManager.GameTime > kick_time_delay_until && GameManager.GameTime > enchant_time)
+                if (kick_ready && GameManager.GameTime > enchant_time && !roll.IsChanneling && !roll.IsInAbilityPhase)
                 {
                     var enemyes = EntityManager.GetEntities<Hero>().Where(x => x.IsEnemy(myHero) && myHero.Distance2D(x.Position) < kick_end_range);
                     foreach (var enemy in enemyes)
                     {
                         float distance = myHero.Distance2D(enemy);
-                        if (!enemy.IsMoving
-                            && enemy.HealthPercent() < 0.5f
+                        if (!enemy.IsMoving && enemy.IsAlive && enemy.IsVisible
                             || distance <= 1200
-                            && (enemy.Rotation - myHero.Rotation) < 75
+                            && (enemy.Rotation
+                                - myHero.Rotation) < 75
                             && (enemy.Rotation - myHero.Rotation) > -75
-                            && enemy.IsMoving
-                            && GetMS(enemy) > myHero.MovementSpeed - 25)
-                            if (HasStoneInRadius(myHero, myHero.Position, 200))
+                            && enemy.IsMoving && enemy.IsAlive && enemy.IsVisible)
+                        {
+                            if (isComboKeyPressed && !pull_ready)
+                                return;
+                            if (HasStoneInRadius(myHero, myHero.Position, 200) && GameManager.GameTime > kick_time && !SleeperOrder.Sleeping)
                             {
                                 float speed = 900;
                                 Vector3 prediction = GetPredictedPosition(enemy, distance / speed);
                                 kick.Cast(prediction);
+                                SleeperOrder.Sleep(70);
                             }
+                            if (!SleeperOrder.Sleeping && isComboKeyPressed && !HasStoneInRadius(myHero, myHero.Position, 200) && stone_ready && stone.Charges > 1 && GameManager.GameTime > stone_time && GameManager.GameTime > kick_time && nearestHero != null)
+                            {
+                                stone.Cast(myHero.Position.Extend(nearestHero.Position, 50));
+                                stone_time = GameManager.GameTime + 1f;
+                                SleeperOrder.Sleep(70);
+                            }
+                        }
                     }
                 }
             }
