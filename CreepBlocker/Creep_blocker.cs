@@ -18,7 +18,7 @@
         private MenuSwitcher isskipranged;
 
         private UpdateHandler updateHandler;
-        
+
 
         protected override void OnActivate()
         {
