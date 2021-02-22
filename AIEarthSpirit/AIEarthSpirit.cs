@@ -283,8 +283,14 @@ namespace EarthSpirit
             Ability stone = myHero.Spellbook.GetSpellById(AbilityId.earth_spirit_stone_caller);
             if (stone != null && stone.IsValid && !SleeperOrder.Sleeping)
             {
-                stone.Cast(InFront(myHero, 100));
-                SleeperOrder.Sleep(70);
+                UpdateManager.BeginInvoke(200, () =>
+                {
+                    if (GetNearestHeroToCursor() != null && !HasStoneBetween(myHero, myHero.Position, GetNearestHeroToCursor().Position))
+                    {
+                        stone.Cast(InFront(myHero, 100));
+                        SleeperOrder.Sleep(70);
+                    }
+                });      
             }
         }
 
@@ -304,11 +310,11 @@ namespace EarthSpirit
             if (myHero == null || pos1 == null || pos2 == null)
                 return false;
 
-            float radius = 150;
+            float radius = 200;
             float dis = pos1.Distance2D(pos2);
             int num = (int)Math.Floor(dis / radius);
 
-            for (int i = 0; i < num; i++)
+            for (int i = -1; i < num; i++)
             {
                 Vector3 mid = pos1.Extend(pos2, radius * i);
                 if (HasStoneInRadius(myHero, mid, radius))
@@ -433,7 +439,7 @@ namespace EarthSpirit
             }
 
             // autoulti
-            if (ult_ready && EntityManager.GetEntities<Hero>().Where(x => x.Distance2D(my_hero_pos) < 300 && x.IsEnemy(myHero) && x.IsAlive && x.IsVisible).Count() >= autoUltiCount.Value)
+            if (ult_ready && EntityManager.GetEntities<Hero>().Where(x => x.Distance2D(my_hero_pos) < 300 && x.IsEnemy(myHero) && x.IsAlive && x.IsVisible && !x.IsIllusion).Count() >= autoUltiCount.Value)
             {
                 if (autoUltiCount >= 1 && !SleeperOrder.Sleeping)
                 {
@@ -481,7 +487,7 @@ namespace EarthSpirit
                     if (nearStone != null && nearStone.Distance2D(myHero) < 1100)
                     {
                         pull.Cast(nearStone.Position);
-                        roll_time = GameManager.GameTime + 0.45f;
+                        roll_time = GameManager.GameTime + nearStone.Distance2D(myHero)/1000 - 0.6f;
                     }
                 }
                 if (roll_ready && IsPositionInRange(myHero, nearestHero.Position, stone_roll_range) && !SleeperOrder.Sleeping && GameManager.GameTime > roll_time)
