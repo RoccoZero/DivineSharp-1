@@ -180,7 +180,7 @@ namespace EarthSpirit
         private static Tower GetNearestAlliedTowerToMyHero(Hero myHero)
         {
             Tower tower;
-            tower = EntityManager.GetEntities<Tower>().Where(x => x.IsAlly(myHero) && x.Distance2D(myHero) <= 2000 && x.Distance2D(myHero) >= 750)
+            tower = EntityManager.GetEntities<Tower>().Where(x => x.IsAlly(myHero) && x.Distance2D(myHero) <= 2000 && x.Distance2D(myHero) >= 800)
                                        .OrderBy(x => x.Distance2D(myHero)).FirstOrDefault();
             if (tower != null)
                 return tower;
