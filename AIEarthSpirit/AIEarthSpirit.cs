@@ -161,6 +161,7 @@ namespace EarthSpirit
                     SleeperOrder.Sleep(300);
                     UpdateManager.BeginInvoke(300, () =>
                     {
+                        kick_time = GameManager.GameTime + 0.4f;
                         myHero.Spellbook.Spell4.Cast(stonePos);
                     });
                 }
@@ -285,12 +286,13 @@ namespace EarthSpirit
             {
                 UpdateManager.BeginInvoke(200, () =>
                 {
+                    Hero localHero = EntityManager.LocalHero;
                     if (GetNearestHeroToCursor() != null && !HasStoneBetween(myHero, myHero.Position, GetNearestHeroToCursor().Position))
                     {
-                        stone.Cast(InFront(myHero, 100));
+                        stone.Cast(InFront(localHero, 100));
                         SleeperOrder.Sleep(70);
                     }
-                });      
+                });
             }
         }
 
@@ -310,7 +312,7 @@ namespace EarthSpirit
             if (myHero == null || pos1 == null || pos2 == null)
                 return false;
 
-            float radius = 200;
+            float radius = 150;
             float dis = pos1.Distance2D(pos2);
             int num = (int)Math.Floor(dis / radius);
 
@@ -418,7 +420,7 @@ namespace EarthSpirit
             Hero nearestHero = GetNearestHeroToCursor();
             Vector3 my_hero_pos = myHero.Position;
 
-            if (PlaceStoneTime != 0 && GameManager.GameTime > PlaceStoneTime && nearestHero != null)
+            if (PlaceStoneTime != 0 && GameManager.GameTime > PlaceStoneTime && nearestHero != null && !SleeperOrder.Sleeping)
             {
                 PlaceStoneTime = 0;
                 if (stone != null && stone_ready && myHero.Distance2D(nearestHero) >= 250)
@@ -487,20 +489,22 @@ namespace EarthSpirit
                     if (nearStone != null && nearStone.Distance2D(myHero) < 1100)
                     {
                         pull.Cast(nearStone.Position);
-                        roll_time = GameManager.GameTime + nearStone.Distance2D(myHero)/1000 - 0.6f;
+                        roll_time = GameManager.GameTime + nearStone.Distance2D(myHero) / 1000 - 0.6f;
                     }
                 }
                 if (roll_ready && IsPositionInRange(myHero, nearestHero.Position, stone_roll_range) && !SleeperOrder.Sleeping && GameManager.GameTime > roll_time)
                 {
                     roll_time = 0;
                     float distance2enemy = myHero.Distance2D(nearestHero.Position);
-                    Vector3 enemyPos = GetPredictedPosition(nearestHero, (distance2enemy / 1800) + 0.6f);
+                    Vector3 enemyPos = GetPredictedPosition(nearestHero, (distance2enemy / 1600) + 0.6f);
                     roll.Cast(enemyPos);
-                    SleeperOrder.Sleep(70);
-                    kick_time = GameManager.GameTime + 1.25f;
+                    //SleeperOrder.Sleep(70);
+                    kick_time = GameManager.GameTime + 1f;
+                    stone_time = GameManager.GameTime + distance2enemy / 1600 + 0.7f;
+                    //SleeperOrder.Sleep(distance2enemy / 1600 + 0.55f);
 
                     if (!HasStoneBetween(myHero, my_hero_pos, nearestHero.Position))
-                        PlaceStoneTime = GameManager.GameTime + 0.45f;
+                        PlaceStoneTime = GameManager.GameTime + 0.6f;
                 }
                 if (GameManager.GameTime > roll_time - 0.1f && !SleeperOrbWalker.Sleeping)
                 {
