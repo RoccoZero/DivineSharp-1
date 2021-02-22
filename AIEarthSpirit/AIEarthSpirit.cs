@@ -46,7 +46,7 @@ namespace EarthSpirit
             isEnable = rootMenu.CreateSwitcher("On/Off");
             isEnable.ValueChanged += isEnableChanged;
 
-            holdKey = rootMenu.CreateHoldKey("Combo key", Key.None);
+            holdKey = rootMenu.CreateHoldKey("Dynamic combo key", Key.None);
             AutoStone = rootMenu.CreateSwitcher("Auto Stone if W", false);
             autoUltiCount = rootMenu.CreateSlider("Enemyes for ult", 3, 0, 5).SetTooltip("If set to 0, it doesn't work");
         }
@@ -158,7 +158,7 @@ namespace EarthSpirit
                 {
                     myHero.MoveToDirection(mousePos);
                     Vector3 stonePos = myHero.Position.Extend(mousePos, 150);
-                    SleeperOrder.Sleep(500);
+                    SleeperOrder.Sleep(300);
                     UpdateManager.BeginInvoke(300, () =>
                     {
                         myHero.Spellbook.Spell4.Cast(stonePos);
@@ -415,10 +415,10 @@ namespace EarthSpirit
             if (PlaceStoneTime != 0 && GameManager.GameTime > PlaceStoneTime && nearestHero != null)
             {
                 PlaceStoneTime = 0;
-                if (stone != null && stone_ready && myHero.Distance2D(nearestHero) > 300)
+                if (stone != null && stone_ready && myHero.Distance2D(nearestHero) >= 250)
                     if (holdKey)
                         PlaceRockInFront(myHero);
-                    else if (stone != null && stone_ready && myHero.Distance2D(nearestHero) < 300 && IsCastOrChan(nearestHero))
+                    else if (stone != null && stone_ready && myHero.Distance2D(nearestHero) <= 250 && IsCastOrChan(nearestHero))
                         if (holdKey)
                             PlaceRockInFront(myHero);
             }
