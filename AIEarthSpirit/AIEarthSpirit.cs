@@ -474,13 +474,13 @@ namespace EarthSpirit
 
             if (holdKey && nearestHero != null)
             {
-                if (pull_ready && roll_ready && HasStoneInRadius(myHero, nearestHero.Position, 400) && !SleeperOrder.Sleeping)
+                if (pull_ready && roll_ready && HasStoneInRadius(myHero, nearestHero.Position, 300) && !SleeperOrder.Sleeping)
                 {
-                    Unit nearStone = EntityManager.GetEntities<Unit>().Where(x => x.Distance2D(nearestHero) < 400 && x.Name == "npc_dota_earth_spirit_stone").FirstOrDefault();
+                    Unit nearStone = EntityManager.GetEntities<Unit>().Where(x => x.Distance2D(nearestHero) < 300 && x.Name == "npc_dota_earth_spirit_stone").FirstOrDefault();
                     if (nearStone != null && nearStone.Distance2D(myHero) < 1100)
                     {
                         pull.Cast(nearStone.Position);
-                        roll_time = GameManager.GameTime + 0.4f;
+                        roll_time = GameManager.GameTime + 0.45f;
                     }
                 }
                 if (roll_ready && IsPositionInRange(myHero, nearestHero.Position, stone_roll_range) && !SleeperOrder.Sleeping && GameManager.GameTime > roll_time)
