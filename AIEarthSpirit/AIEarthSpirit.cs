@@ -180,7 +180,7 @@ namespace EarthSpirit
         private static Tower GetNearestAlliedTowerToMyHero(Hero myHero)
         {
             Tower tower;
-            tower = EntityManager.GetEntities<Tower>().Where(x => x.IsAlly(myHero) && x.Distance2D(myHero) <= 2000 && x.Distance2D(myHero) >= 700)
+            tower = EntityManager.GetEntities<Tower>().Where(x => x.IsAlly(myHero) && x.Distance2D(myHero) <= 2000 && x.Distance2D(myHero) > 650)
                                        .OrderBy(x => x.Distance2D(myHero)).FirstOrDefault();
             if (tower != null)
                 return tower;
@@ -617,7 +617,7 @@ namespace EarthSpirit
                     enemy = EntityManager.GetEntities<Hero>().Where(x => x.IsEnemy(myHero) && x.Distance2D(my_hero_pos) < 200 && x.IsVisible && x.IsAlive).OrderBy(x => x.Distance2D(my_hero_pos)).FirstOrDefault();
                     hero = EntityManager.GetEntities<Hero>().Where(x => x.Position != my_hero_pos && x.HealthPercent() > 0.7 && x.IsAlly(myHero) && x.IsAlive && myHero.Distance2D(x) < 1200).OrderBy(x => x.Health).FirstOrDefault();
 
-                    if (enemy != null && hero != null && GetNearestAlliedTowerToMyHero(myHero) != null &&GetNearestAlliedTowerToMyHero(myHero).Distance2D(myHero) > 700)
+                    if (enemy != null && hero != null && GetNearestAlliedTowerToMyHero(myHero) != null && GetNearestAlliedTowerToMyHero(myHero).Distance2D(myHero) > 650)
                     {
                         Vector3 goodPoint = hero.Position.Extend(enemy.Position, hero.Distance2D(enemy) + 180);
                         if (enchant_ready && myHero.Distance2D(goodPoint) < 60 && myHero.Distance2D(hero) > 800 && !SleeperOrder.Sleeping)
