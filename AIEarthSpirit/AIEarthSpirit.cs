@@ -157,7 +157,7 @@ namespace EarthSpirit
                 if (!HasStoneBetween(myHero, myHero.Position, mousePos))
                 {
                     myHero.MoveToDirection(mousePos);
-                    Vector3 stonePos = myHero.Position.Extend(mousePos, 50);
+                    Vector3 stonePos = myHero.Position.Extend(mousePos, 150);
                     SleeperOrder.Sleep(650);
                     UpdateManager.BeginInvoke(300, () =>
                     {
