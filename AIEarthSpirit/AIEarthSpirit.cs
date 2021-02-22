@@ -1,9 +1,11 @@
 ﻿using Divine;
 using Divine.Menu;
+using Divine.Menu.EventArgs;
 using Divine.Menu.Items;
 using Divine.SDK.Extensions;
 using Divine.SDK.Helpers;
 using Divine.SDK.Managers.Update;
+using Divine.SDK.Orbwalker;
 using SharpDX;
 using System;
 using System.Linq;
@@ -15,42 +17,72 @@ namespace EarthSpirit
     {
         private Hero myHero;
 
+        private MenuSwitcher isEnable;
         private MenuHoldKey holdKey;
         private MenuSwitcher AutoStone;
         private MenuSlider autoUltiCount;
-        private bool isComboKeyPressed;
 
         private float stone_time;
         private float PlaceStoneTime;
         private float kick_time_delay_until;
         private float enchant_time;
         private float kick_time;
+        private float roll_time;
 
         private bool IsIgnoreInput = false;
 
         private readonly Sleeper SleeperOrder = new Sleeper();
+        private readonly Sleeper SleeperOrbWalker = new Sleeper();
 
         protected override void OnActivate()
         {
-            stone_time = 0;
-            PlaceStoneTime = 0;
-            kick_time_delay_until = 0;
-            enchant_time = 0;
-            kick_time = 0;
-            myHero = EntityManager.LocalHero;
-            if (myHero.HeroId == HeroId.npc_dota_hero_earth_spirit)
+            // заново!!!! 
+            if (EntityManager.LocalHero.HeroId != HeroId.npc_dota_hero_earth_spirit)
             {
-                var rootMenu = MenuManager.CreateRootMenu("AI Earth spirit");
-                AutoStone = rootMenu.CreateSwitcher("Auto Stone if W", false);
-                autoUltiCount = rootMenu.CreateSlider("Enemyes for ult", 3, 0, 5);
-                holdKey = rootMenu.CreateHoldKey("Combo key", Key.None);
+                return;
+            }
+
+            var rootMenu = MenuManager.CreateRootMenu("AI Earth spirit");
+            isEnable = rootMenu.CreateSwitcher("On/Off");
+            isEnable.ValueChanged += isEnableChanged;
+
+            holdKey = rootMenu.CreateHoldKey("Combo key", Key.None);
+            AutoStone = rootMenu.CreateSwitcher("Auto Stone if W", false);
+            autoUltiCount = rootMenu.CreateSlider("Enemyes for ult", 3, 0, 5).SetTooltip("If set to 0, it doesn't work");
+        }
+
+        private void isEnableChanged(MenuSwitcher switcher, SwitcherEventArgs e)
+        {
+            if (e.Value)
+            {
+                stone_time = 0;
+                PlaceStoneTime = 0;
+                kick_time_delay_until = 0;
+                enchant_time = 0;
+                kick_time = 0;
+                roll_time = 0;
+
+                myHero = EntityManager.LocalHero;
+
                 GameManager.IngameUpdate += OnUpdate;
                 InputManager.KeyUp += OnInputManagerKeyUpCtrl;
                 InputManager.KeyDown += OnInputManagerKeyDownCtrl;
                 InputManager.KeyUp += OnInputManagerKeyUpAlt;
                 InputManager.KeyDown += OnInputManagerKeyDownAlt;
                 OrderManager.OrderAdding += OnUnitOrder;
-                holdKey.ValueChanged += (sender, e) => isComboKeyPressed = e.Value;
+            }
+            else
+            {
+                /* holdKey.IsHidden = true;
+                 AutoStone.IsHidden = true;
+                 autoUltiCount.IsHidden = true;*/
+
+                GameManager.IngameUpdate -= OnUpdate;
+                InputManager.KeyUp -= OnInputManagerKeyUpCtrl;
+                InputManager.KeyDown -= OnInputManagerKeyDownCtrl;
+                InputManager.KeyUp -= OnInputManagerKeyUpAlt;
+                InputManager.KeyDown -= OnInputManagerKeyDownAlt;
+                OrderManager.OrderAdding -= OnUnitOrder;
             }
         }
 
@@ -83,7 +115,7 @@ namespace EarthSpirit
         }
         private void OnUnitOrder(OrderAddingEventArgs e)
         {
-            if (e.IsCustom || IsIgnoreInput)
+            if (e.IsCustom || IsIgnoreInput || !isEnable)
             {
                 return;
             }
@@ -92,7 +124,7 @@ namespace EarthSpirit
             Ability roll = myHero.Spellbook.Spell2;
             Vector3 mousePos = GameManager.MousePosition;
             if (e.Order.Ability == boulSmash && !EntityManager.GetEntities<Entity>()
-                                                              .Where(x => x.Name == "npc_dota_earth_spirit_stone" && myHero.Distance2D(x.Position) < 200)
+                                                              .Where(x => x.Name == "npc_dota_earth_spirit_stone" && x.IsAlive && myHero.Distance2D(x.Position) < 200)
                                                               .Any())
             {
                 bool isIn = false;
@@ -107,7 +139,7 @@ namespace EarthSpirit
                 return;
             }
             if (e.Order.Ability == pull && !EntityManager.GetEntities<Entity>()
-                                                              .Where(x => x.Name == "npc_dota_earth_spirit_stone" && mousePos.Distance2D(x.Position) < 200)
+                                                              .Where(x => x.Name == "npc_dota_earth_spirit_stone" && x.IsAlive && mousePos.Distance2D(x.Position) < 200)
                                                               .Any())
             {
                 myHero.Spellbook.Spell4.Cast(mousePos);
@@ -188,6 +220,8 @@ namespace EarthSpirit
         }
         private static Vector3 GetPredictedPosition(Hero Hero, float delay)
         {
+            if (Hero == null)
+                return default;
             Vector3 pos = Hero.Position;
             if (CantMove(Hero) || !Hero.IsMoving || delay == 0) return pos;
             float speed = GetMS(Hero);
@@ -258,7 +292,7 @@ namespace EarthSpirit
             if (pos == null || radius == 0) return false;
 
             bool stones = false;
-            stones = EntityManager.GetEntities<Entity>().Where(x => x.Name == "npc_dota_earth_spirit_stone" && x.Distance2D(pos) < radius && x.IsAlive && x.IsValid).Any();
+            stones = EntityManager.GetEntities<Entity>().Where(x => x.Name == "npc_dota_earth_spirit_stone" && x.Distance2D(pos) < radius && x.IsAlive && x.IsValid && x.IsVisible).Any();
             if (stones == true)
                 return true;
             return false;
@@ -301,7 +335,7 @@ namespace EarthSpirit
             float dis = pos1.Distance2D(pos2);
             int num = (int)Math.Floor(dis / radius);
 
-            for (int i = 0; i < num + 1; i++)
+            for (int i = 0; i < num; i++)
             {
                 Vector3 mid = pos1 + dir * i;
                 if (HasEnemyHeroInRadius(myHero, mid, radius))
@@ -377,14 +411,14 @@ namespace EarthSpirit
             Hero nearestHero = GetNearestHeroToCursor();
             Vector3 my_hero_pos = myHero.Position;
 
-            if (PlaceStoneTime != 0 && GameManager.GameTime > PlaceStoneTime)
+            if (PlaceStoneTime != 0 && GameManager.GameTime > PlaceStoneTime && nearestHero != null)
             {
                 PlaceStoneTime = 0;
                 if (stone != null && stone_ready && myHero.Distance2D(nearestHero) > 300)
-                    if (isComboKeyPressed)
+                    if (holdKey)
                         PlaceRockInFront(myHero);
                     else if (stone != null && stone_ready && myHero.Distance2D(nearestHero) < 300 && IsCastOrChan(nearestHero))
-                        if (isComboKeyPressed)
+                        if (holdKey)
                             PlaceRockInFront(myHero);
             }
 
@@ -413,7 +447,7 @@ namespace EarthSpirit
             {
                 enchant_time = 0;
                 Tower nearest2HeroTower = GetNearestAlliedTowerToMyHero(myHero);
-                if (nearest2HeroTower != null || nearest2HeroTower != default && nearestHero != null)
+                if (nearest2HeroTower != null && nearestHero != null)
                 {
                     Vector3 target = nearestHero.Position.Extend(nearest2HeroTower.Position, (nearestHero.Distance2D(nearest2HeroTower) / 4));
                     if (target != null && !SleeperOrder.Sleeping)
@@ -438,10 +472,20 @@ namespace EarthSpirit
                 }
             }*/
 
-            if (isComboKeyPressed && nearestHero != null)
+            if (holdKey && nearestHero != null)
             {
-                if (roll_ready && IsPositionInRange(myHero, nearestHero.Position, stone_roll_range) && !SleeperOrder.Sleeping)
+                if (pull_ready && roll_ready && HasStoneInRadius(myHero, nearestHero.Position, 400) && !SleeperOrder.Sleeping)
                 {
+                    Unit nearStone = EntityManager.GetEntities<Unit>().Where(x => x.Distance2D(nearestHero) < 400 && x.Name == "npc_dota_earth_spirit_stone").FirstOrDefault();
+                    if (nearStone != null && nearStone.Distance2D(myHero) < 1100)
+                    {
+                        pull.Cast(nearStone.Position);
+                        roll_time = GameManager.GameTime + 0.4f;
+                    }
+                }
+                if (roll_ready && IsPositionInRange(myHero, nearestHero.Position, stone_roll_range) && !SleeperOrder.Sleeping && GameManager.GameTime > roll_time)
+                {
+                    roll_time = 0;
                     float distance2enemy = myHero.Distance2D(nearestHero.Position);
                     Vector3 enemyPos = GetPredictedPosition(nearestHero, (distance2enemy / 1800) + 0.6f);
                     roll.Cast(enemyPos);
@@ -451,13 +495,18 @@ namespace EarthSpirit
                     if (!HasStoneBetween(myHero, my_hero_pos, nearestHero.Position))
                         PlaceStoneTime = GameManager.GameTime + 0.45f;
                 }
+                if (GameManager.GameTime > roll_time - 0.1f && !SleeperOrbWalker.Sleeping)
+                {
+                    OrbwalkerManager.OrbwalkTo(nearestHero);
+                    SleeperOrbWalker.Sleep(50);
+                }
             }
 
             bool inRange = EntityManager.GetEntities<Hero>().Where(x => !x.IsAlly(myHero) && x.Distance2D(myHero) < 2100).Any();
             if (inRange == true)
             {
                 // automatically silence enemies with existing remnants
-                if (pull_ready && isComboKeyPressed)
+                if (pull_ready && holdKey)
                 {
                     Hero[] enemyes = null;
                     enemyes = EntityManager.GetEntities<Hero>()
@@ -472,7 +521,7 @@ namespace EarthSpirit
                             foreach (var stones in unitsAround)
                             {
                                 if (stones != null && stones.Name == "npc_dota_earth_spirit_stone")
-                                    if (HasEnemyHeroBetween(myHero, my_hero_pos, stones.Position, 150) && !SleeperOrder.Sleeping)
+                                    if (HasEnemyHeroBetween(myHero, my_hero_pos, stones.Position, 170) && !SleeperOrder.Sleeping)
                                     {
                                         pull.Cast(stones.Position);
                                         SleeperOrder.Sleep(70);
@@ -565,7 +614,7 @@ namespace EarthSpirit
                     Hero enemy = null;
                     Hero hero = null;
                     enemy = EntityManager.GetEntities<Hero>().Where(x => x.IsEnemy(myHero) && x.Distance2D(my_hero_pos) < 200 && x.IsVisible && x.IsAlive).OrderBy(x => x.Distance2D(my_hero_pos)).FirstOrDefault();
-                    hero = EntityManager.GetEntities<Hero>().Where(x => x.Position != my_hero_pos && x.HealthPercent() > 0.7 && x.IsAlly(myHero) && x.IsAlive && myHero.Distance2D(x) < 1200).OrderByDescending(x => x.Health).FirstOrDefault();
+                    hero = EntityManager.GetEntities<Hero>().Where(x => x.Position != my_hero_pos && x.HealthPercent() > 0.7 && x.IsAlly(myHero) && x.IsAlive && myHero.Distance2D(x) < 1200).OrderBy(x => x.Health).FirstOrDefault();
 
                     if (enemy != null && hero != null)
                     {
@@ -595,9 +644,10 @@ namespace EarthSpirit
                 }
 
                 // auto 1spell
-                if (kick_ready && GameManager.GameTime > enchant_time && !roll.IsChanneling && !roll.IsInAbilityPhase)
+                if (kick_ready && GameManager.GameTime > enchant_time && !roll.IsChanneling && !roll.IsInAbilityPhase && GameManager.GameTime > roll_time)
                 {
-                    var enemyes = EntityManager.GetEntities<Hero>().Where(x => x.IsEnemy(myHero) && myHero.Distance2D(x.Position) < kick_end_range);
+                    roll_time = 0;
+                    var enemyes = EntityManager.GetEntities<Hero>().Where(x => x.IsEnemy(myHero) && myHero.Distance2D(x.Position) < kick_end_range).OrderBy(x => myHero.Distance2D(x.Position));
                     foreach (var enemy in enemyes)
                     {
                         float distance = myHero.Distance2D(enemy);
@@ -608,8 +658,6 @@ namespace EarthSpirit
                             && (enemy.Rotation - myHero.Rotation) > -75
                             && enemy.IsMoving && enemy.IsAlive && enemy.IsVisible)
                         {
-                            if (isComboKeyPressed && !pull_ready)
-                                return;
                             if (HasStoneInRadius(myHero, myHero.Position, 200) && GameManager.GameTime > kick_time && !SleeperOrder.Sleeping)
                             {
                                 float speed = 900;
@@ -617,10 +665,12 @@ namespace EarthSpirit
                                 kick.Cast(prediction);
                                 SleeperOrder.Sleep(70);
                             }
-                            if (!SleeperOrder.Sleeping && isComboKeyPressed && !HasStoneInRadius(myHero, myHero.Position, 200) && stone_ready && stone.Charges > 1 && GameManager.GameTime > stone_time && GameManager.GameTime > kick_time && nearestHero != null)
+                            if (holdKey && !pull_ready)
+                                return;
+                            if (!SleeperOrder.Sleeping && holdKey && !HasStoneInRadius(myHero, myHero.Position, 200) && stone_ready && stone.Charges > 1 && GameManager.GameTime > stone_time && GameManager.GameTime > kick_time && nearestHero != null)
                             {
                                 stone.Cast(myHero.Position.Extend(nearestHero.Position, 50));
-                                stone_time = GameManager.GameTime + 1f;
+                                stone_time = GameManager.GameTime + 0.8f;
                                 SleeperOrder.Sleep(70);
                             }
                         }
