@@ -117,6 +117,7 @@ namespace EarthSpirit
         {
             if (e.IsCustom || IsIgnoreInput || !isEnable)
             {
+                e.Process = true;
                 return;
             }
             Ability boulSmash = myHero.Spellbook.Spell1;
