@@ -19,6 +19,7 @@ namespace EarthSpirit
         private MenuSwitcher isEnable;
         private MenuHoldKey holdKey;
         private MenuSwitcher AutoStone;
+        private MenuSlider stonesToSave;
         private MenuSlider autoUltiCount;
 
         private float stone_time;
@@ -46,6 +47,7 @@ namespace EarthSpirit
 
             holdKey = rootMenu.CreateHoldKey("Dynamic сombo key", Key.None);
             AutoStone = rootMenu.CreateSwitcher("Auto Stone if W", false);
+            stonesToSave = rootMenu.CreateSlider("Stones to save", 2, 0, 5);
             autoUltiCount = rootMenu.CreateSlider("Enemyes for ult", 3, 0, 5).SetTooltip("If set to 0, it doesn't work");
         }
 
@@ -150,8 +152,8 @@ namespace EarthSpirit
                 if (!HasStoneBetween(myHero, myHero.Position, mousePos))
                 {
                     myHero.MoveToDirection(mousePos);
-                    Vector3 stonePos = myHero.Position.Extend(mousePos, 50);
-                    SleeperOrder.Sleep(650);
+                    Vector3 stonePos = myHero.Position.Extend(mousePos, 100); 
+                    SleeperOrder.Sleep(myHero.TurnTime(mousePos) * 1.2f + 500 + GameManager.AvgPing);
                     UpdateManager.BeginInvoke(300, () =>
                     {
                         myHero.Spellbook.Spell4.Cast(stonePos);
@@ -396,7 +398,7 @@ namespace EarthSpirit
             bool pull_ready = pull.Level > 0 && pull.Cooldown == 0 && IsCastable(pull.ManaCost, myMana);
             bool roll_ready = roll.Level > 0 && roll.Cooldown == 0 && IsCastable(roll.ManaCost, myMana);
             bool ult_ready = ult.Level > 0 && ult.Cooldown == 0 && IsCastable(ult.ManaCost, myMana);
-            bool stone_ready = stone.Level > 0 && stone.Cooldown == 0 && IsCastable(stone.ManaCost, myMana);
+            bool stone_ready = stone.Level > 0 && stone.CurrentCharges > stonesToSave && IsCastable(stone.ManaCost, myMana);
             bool bonus_roll_range_learned = bonus_talent_roll_range.IsValid && bonus_talent_roll_range.Level > 0;
             bool enchant_ready = enchant.IsValid && enchant.Level > 0 && enchant.Cooldown == 0 && IsCastable(enchant.ManaCost, myMana);
 
@@ -645,8 +647,8 @@ namespace EarthSpirit
                     foreach (var enemy in enemyes)
                     {
                         float distance = myHero.Distance2D(enemy);
-                        if (!enemy.IsMoving && enemy.IsAlive && enemy.IsVisible && distance <= 1000
-                            || distance <= 1000
+                        if (!enemy.IsMoving && enemy.IsAlive && enemy.IsVisible && distance <= 800
+                            || distance <= 1000 
                             && (enemy.Rotation
                                 - myHero.Rotation) < 75
                             && (enemy.Rotation - myHero.Rotation) > -75
