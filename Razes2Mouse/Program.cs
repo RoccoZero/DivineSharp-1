@@ -2,7 +2,6 @@
 using Divine.Menu;
 using Divine.Menu.Items;
 using Divine.SDK.Extensions;
-using Divine.SDK.Managers.Update;
 
 using SharpDX;
 
@@ -19,7 +18,7 @@ namespace Razes2Mouse
         protected override void OnActivate()
         {
             OrderManager.OrderAdding += OnUnitOrder;
-            UpdateManager.Subscribe(8, OnDraw);
+            UpdateManager.CreateIngameUpdate(8, OnDraw);
             var rootMenu = MenuManager.CreateRootMenu("SF HELPER");
             DrawRazes = rootMenu.CreateSwitcher("Draw Shadowrazes");
             Razes2Mouse = rootMenu.CreateSwitcher("Shadowrazes to mouse direction");

@@ -4,7 +4,6 @@ using Divine.Menu.EventArgs;
 using Divine.Menu.Items;
 using Divine.SDK.Extensions;
 using Divine.SDK.Helpers;
-using Divine.SDK.Managers.Update;
 using Divine.SDK.Orbwalker;
 using SharpDX;
 using System;
@@ -36,12 +35,10 @@ namespace EarthSpirit
 
         protected override void OnActivate()
         {
-            // заново!!!! 
             if (EntityManager.LocalHero.HeroId != HeroId.npc_dota_hero_earth_spirit)
             {
                 return;
             }
-
             var rootMenu = MenuManager.CreateRootMenu("AI Earth spirit");
             isEnable = rootMenu.CreateSwitcher("On/Off");
             isEnable.ValueChanged += isEnableChanged;
@@ -64,7 +61,7 @@ namespace EarthSpirit
 
                 myHero = EntityManager.LocalHero;
 
-                GameManager.IngameUpdate += OnUpdate;
+                UpdateManager.IngameUpdate += OnUpdate;
                 InputManager.KeyUp += OnInputManagerKeyUpCtrl;
                 InputManager.KeyDown += OnInputManagerKeyDownCtrl;
                 InputManager.KeyUp += OnInputManagerKeyUpAlt;
@@ -73,11 +70,7 @@ namespace EarthSpirit
             }
             else
             {
-                /* holdKey.IsHidden = true;
-                 AutoStone.IsHidden = true;
-                 autoUltiCount.IsHidden = true;*/
-
-                GameManager.IngameUpdate -= OnUpdate;
+                UpdateManager.IngameUpdate -= OnUpdate;
                 InputManager.KeyUp -= OnInputManagerKeyUpCtrl;
                 InputManager.KeyDown -= OnInputManagerKeyDownCtrl;
                 InputManager.KeyUp -= OnInputManagerKeyUpAlt;

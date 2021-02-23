@@ -4,7 +4,6 @@
     using Divine.Menu;
     using Divine.Menu.Items;
     using Divine.SDK.Extensions;
-    using Divine.SDK.Managers.Update;
     using SharpDX;
     using System;
     using System.Linq;
@@ -27,7 +26,7 @@
             sens = rootMenu.CreateSlider("Block sensetivity", 550, 500, 700);
             isskipranged = rootMenu.CreateSwitcher("Block ranged creep", false);
 
-            updateHandler = UpdateManager.Subscribe(50, false, OnUpdate);
+            updateHandler = UpdateManager.CreateIngameUpdate(50, false, OnUpdate);
             holdKey.ValueChanged += (sender, e) =>
             {
                 updateHandler.IsEnabled = e.Value;

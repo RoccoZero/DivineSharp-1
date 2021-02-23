@@ -2,7 +2,6 @@
 using Divine.Menu;
 using Divine.Menu.Items;
 using Divine.SDK.Extensions;
-using Divine.SDK.Managers.Update;
 using SharpDX;
 using System;
 using System.Linq;
@@ -30,7 +29,7 @@ namespace AntiSlark
         {
 
             ParticleManager.ParticleAdded += ParticleManager_ParticleAdded;
-            UpdateManager.Subscribe(140, GameManager_IngameUpdate);
+            UpdateManager.CreateIngameUpdate(140, GameManager_IngameUpdate);
 
             var rootMenu = MenuManager.CreateRootMenu("Utility");
             var antiPounceRoot = rootMenu.CreateMenu("AntiPounce");
