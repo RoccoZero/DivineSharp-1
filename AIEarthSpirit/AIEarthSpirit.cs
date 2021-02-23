@@ -480,7 +480,7 @@ namespace EarthSpirit
                 {
                     roll_time = 0;
                     float distance2enemy = myHero.Distance2D(nearestHero.Position);
-                    Vector3 enemyPos = GetPredictedPosition(nearestHero, (distance2enemy / 1800) + 0.6f);
+                    Vector3 enemyPos = GetPredictedPosition(nearestHero, (distance2enemy / 1550) + 0.6f);
                     roll.Cast(enemyPos);
                     SleeperOrder.Sleep(70);
                     kick_time = GameManager.GameTime + 1.25f;
