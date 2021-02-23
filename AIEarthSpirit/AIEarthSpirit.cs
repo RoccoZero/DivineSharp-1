@@ -44,7 +44,7 @@ namespace EarthSpirit
             isEnable = rootMenu.CreateSwitcher("On/Off");
             isEnable.ValueChanged += isEnableChanged;
 
-            holdKey = rootMenu.CreateHoldKey("Combo key", Key.None);
+            holdKey = rootMenu.CreateHoldKey("Dynamic сombo key", Key.None);
             AutoStone = rootMenu.CreateSwitcher("Auto Stone if W", false);
             autoUltiCount = rootMenu.CreateSlider("Enemyes for ult", 3, 0, 5).SetTooltip("If set to 0, it doesn't work");
         }
@@ -645,8 +645,8 @@ namespace EarthSpirit
                     foreach (var enemy in enemyes)
                     {
                         float distance = myHero.Distance2D(enemy);
-                        if (!enemy.IsMoving && enemy.IsAlive && enemy.IsVisible
-                            || distance <= 1200
+                        if (!enemy.IsMoving && enemy.IsAlive && enemy.IsVisible && distance <= 1000
+                            || distance <= 1000
                             && (enemy.Rotation
                                 - myHero.Rotation) < 75
                             && (enemy.Rotation - myHero.Rotation) > -75
