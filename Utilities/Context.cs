@@ -13,7 +13,7 @@ namespace Utilities
 
         public Context()
         {
-            rootMenu = MenuManager.CreateRootMenu("Utilities");
+            rootMenu = MenuManager.CreateRootMenu("Rock.Utilities");
             antislark = new Antislark(this);
             creepblock = new Creepblocker(this);
         }
