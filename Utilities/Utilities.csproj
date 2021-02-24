@@ -71,6 +71,7 @@
     <Compile Include="BootStrap.cs" />
     <Compile Include="Context.cs" />
     <Compile Include="Modules\Antislark.cs" />
+    <Compile Include="Modules\AutoDust.cs" />
     <Compile Include="Modules\Creepblocker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
