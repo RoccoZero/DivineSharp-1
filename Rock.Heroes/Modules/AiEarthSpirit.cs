@@ -191,7 +191,7 @@ namespace RockHeroes.Modules
         {
             Hero hero = null;
             hero = EntityManager.GetEntities<Hero>()
-                                           .Where(x => !x.IsAlly(EntityManager.LocalHero) && x.IsAlive && x.IsVisible && x.IsValid && !x.IsIllusion && x.Distance2D(GameManager.MousePosition) < 800)
+                                           .Where(x => !x.IsAlly(EntityManager.LocalHero) && x.IsAlive && x.IsVisible && x.IsValid && !x.IsIllusion && x.Distance2D(GameManager.MousePosition) < 700)
                                            .OrderBy(x => x.Distance2D(GameManager.MousePosition)).FirstOrDefault();
             if (hero != default || hero != null)
                 return hero;
@@ -447,7 +447,7 @@ namespace RockHeroes.Modules
             {
                 enchant_time = 0;
                 Tower nearest2HeroTower = GetNearestAlliedTowerToMyHero(myHero);
-                if (nearest2HeroTower != null && nearestHero != null && nearest2HeroTower.Distance2D(myHero) < 2000)
+                if (nearest2HeroTower != null && nearestHero != null && nearest2HeroTower.Distance2D(myHero) < 2200)
                 {
                     Vector3 target = nearestHero.Position.Extend(nearest2HeroTower.Position, (nearestHero.Distance2D(nearest2HeroTower) / 4));
                     if (target != null && !SleeperOrder.Sleeping)
@@ -477,10 +477,11 @@ namespace RockHeroes.Modules
                 if (pull_ready && roll_ready && HasStoneInRadius(myHero, nearestHero.Position, 400) && !SleeperOrder.Sleeping)
                 {
                     Unit nearStone = EntityManager.GetEntities<Unit>().Where(x => x.Distance2D(nearestHero) < 400 && x.Name == "npc_dota_earth_spirit_stone").FirstOrDefault();
-                    if (nearStone != null && nearStone.Distance2D(myHero) < 1100)
+                    if (nearStone != null && nearStone.Distance2D(myHero) < 1100 && !SleeperOrder.Sleeping)
                     {
                         pull.Cast(nearStone.Position);
                         roll_time = GameManager.GameTime + 0.4f;
+                        SleeperOrder.Sleep(70);
                     }
                 }
                 if (roll_ready && IsPositionInRange(myHero, nearestHero.Position, stone_roll_range) && !SleeperOrder.Sleeping && GameManager.GameTime > roll_time)
