@@ -14,7 +14,7 @@ namespace RockHeroes
         {
             rootMenu = MenuManager.CreateRootMenu("Rock.Heroes");
             aiEarthSpirit = new AiEarthSpirit(this);
-            sfRazes = new SfRazes(this);
+            sfRazes = new SfRazes(this);         
         }
 
         public void Dispose()

@@ -474,7 +474,7 @@ namespace RockHeroes.Modules
 
             if (holdKey && nearestHero != null)
             {
-                if (pull_ready && roll_ready && HasStoneInRadius(myHero, nearestHero.Position, 400) && !SleeperOrder.Sleeping)
+                if (pull_ready && roll_ready && HasStoneInRadius(myHero, nearestHero.Position, 400) && !SleeperOrder.Sleeping && myHero.Mana >= pull.ManaCost + roll.ManaCost)
                 {
                     Unit nearStone = EntityManager.GetEntities<Unit>().Where(x => x.Distance2D(nearestHero) < 400 && x.Name == "npc_dota_earth_spirit_stone").FirstOrDefault();
                     if (nearStone != null && nearStone.Distance2D(myHero) < 1100 && !SleeperOrder.Sleeping)
