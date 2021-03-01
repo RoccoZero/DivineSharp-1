@@ -5,13 +5,12 @@ using SharpDX;
 
 namespace RockHeroes.Modules
 {
-    class SfRazes
+    internal class SfRazes
     {
-        private MenuSwitcher DrawRazes;
-        private MenuSwitcher Razes2Mouse;
-        private MenuSlider ColorSwitcher;
-
-        Color[] Colours = { Color.White, Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Pink, Color.Purple };
+        private readonly MenuSwitcher DrawRazes;
+        private readonly MenuSwitcher Razes2Mouse;
+        private readonly MenuSlider ColorSwitcher;
+        private readonly Color[] Colours = { Color.White, Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Pink, Color.Purple };
 
         public SfRazes(Context context)
         {

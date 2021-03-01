@@ -6,41 +6,57 @@ using Divine.SDK.Helpers;
 using Divine.SDK.Orbwalker;
 using SharpDX;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 
-namespace RockHeroes.Modules
+namespace RockHeroes.Modules.EarthSpirit
 {
-    class AiEarthSpirit
+
+    internal sealed class EarthSpirit
     {
-        private Hero myHero;
+        public Hero myHero;
+        public Hero nearestHero;
 
         private readonly MenuSwitcher isEnable;
-        private readonly MenuHoldKey holdKey;
+        public readonly MenuHoldKey holdKey;
         private readonly MenuSwitcher AutoStone;
         private readonly MenuSlider stonesToSave;
         private readonly MenuSlider autoUltiCount;
 
         private float stone_time;
         private float PlaceStoneTime;
-        private float kick_time_delay_until;
         private float enchant_time;
         private float kick_time;
         private float roll_time;
+        public Menu AiEarthSpiritMenu;
 
         private bool IsIgnoreInput = false;
+        public Sleeper SleeperOrder = new Sleeper();
+        public Sleeper SleeperOrbWalker = new Sleeper();
 
-        private readonly Sleeper SleeperOrder = new Sleeper();
-        private readonly Sleeper SleeperOrbWalker = new Sleeper();
+        public MenuItemToggler comboItems;
 
-        public AiEarthSpirit(Context context)
+        public Dictionary<AbilityId, bool> cItems = new Dictionary<AbilityId, bool>
+            {
+            { AbilityId.item_veil_of_discord, true },
+            { AbilityId.item_shivas_guard, true },
+            { AbilityId.item_sheepstick, true },
+            { AbilityId.item_urn_of_shadows, true },
+            { AbilityId.item_spirit_vessel, true },
+            { AbilityId.item_ethereal_blade, true },
+            { AbilityId.item_abyssal_blade, true },
+            { AbilityId.item_diffusal_blade, true }
+            };
+
+        public EarthSpirit(Context context)
         {
             if (EntityManager.LocalHero.HeroId != HeroId.npc_dota_hero_earth_spirit)
             {
                 return;
             }
 
-            var AiEarthSpiritMenu = context.rootMenu.CreateMenu("AI Earth Spirit").SetHeroTexture(Divine.HeroId.npc_dota_hero_earth_spirit);
+            AiEarthSpiritMenu = context.rootMenu.CreateMenu("AI Earth Spirit").SetHeroTexture(Divine.HeroId.npc_dota_hero_earth_spirit);
             isEnable = AiEarthSpiritMenu.CreateSwitcher("On/Off");
             isEnable.ValueChanged += isEnableChanged;
 
@@ -48,6 +64,8 @@ namespace RockHeroes.Modules
             AutoStone = AiEarthSpiritMenu.CreateSwitcher("Auto Stone if W", false);
             stonesToSave = AiEarthSpiritMenu.CreateSlider("Stones to save", 2, 0, 5);
             autoUltiCount = AiEarthSpiritMenu.CreateSlider("Enemyes for ult", 3, 0, 5).SetTooltip("If set to 0, it doesn't work");
+            comboItems = AiEarthSpiritMenu.CreateItemToggler("Combo Items", cItems);
+
         }
 
         internal void Dispose()
@@ -61,7 +79,6 @@ namespace RockHeroes.Modules
             {
                 stone_time = 0;
                 PlaceStoneTime = 0;
-                kick_time_delay_until = 0;
                 enchant_time = 0;
                 kick_time = 0;
                 roll_time = 0;
@@ -170,7 +187,7 @@ namespace RockHeroes.Modules
             return;
         }
 
-        private static bool IsCastable(float manaCost, float manaPool)
+        public bool IsCastable(float manaCost, float manaPool)
         {
             if (manaPool - manaCost > 0)
                 return true;
@@ -383,9 +400,6 @@ namespace RockHeroes.Modules
             Ability ult = myHero.Spellbook.GetSpellById(AbilityId.earth_spirit_magnetize);
             Ability enchant = myHero.Spellbook.GetSpellById(AbilityId.earth_spirit_petrify);
 
-            if (roll.IsInAbilityPhase)
-                kick_time_delay_until += GameManager.GameTime + 0.35f;
-
             Ability stone = myHero.Spellbook.GetSpellById(AbilityId.earth_spirit_stone_caller);
             Ability bonus_talent_roll_range = myHero.Spellbook.GetSpellById(AbilityId.special_bonus_unique_earth_spirit_4);
 
@@ -409,7 +423,7 @@ namespace RockHeroes.Modules
 
             bool lens = myHero.Inventory.MainItems.Where(x => x.Id == AbilityId.item_aether_lens).Any();
 
-            Hero nearestHero = GetNearestHeroToCursor();
+            nearestHero = GetNearestHeroToCursor();
             Vector3 my_hero_pos = myHero.Position;
 
             if (PlaceStoneTime != 0 && GameManager.GameTime > PlaceStoneTime && nearestHero != null)
@@ -472,8 +486,20 @@ namespace RockHeroes.Modules
                 }
             }*/
 
-            if (holdKey && nearestHero != null)
+            if (holdKey && nearestHero != null && !nearestHero.HasModifier("modifier_eul_cyclone"))
             {
+                if (!SleeperOrder.Sleeping)
+                {
+                    try
+                    {
+                        new Abyssal(myHero, nearestHero, comboItems, ref SleeperOrder);
+                    }
+                    catch
+                    {
+                        //todo
+                    }
+                }
+
                 if (pull_ready && roll_ready && HasStoneInRadius(myHero, nearestHero.Position, 400) && !SleeperOrder.Sleeping && myHero.Mana >= pull.ManaCost + roll.ManaCost)
                 {
                     Unit nearStone = EntityManager.GetEntities<Unit>().Where(x => x.Distance2D(nearestHero) < 400 && x.Name == "npc_dota_earth_spirit_stone").FirstOrDefault();
@@ -499,8 +525,95 @@ namespace RockHeroes.Modules
                 if (GameManager.GameTime > roll_time - 0.1f && !SleeperOrbWalker.Sleeping)
                 {
                     OrbwalkerManager.OrbwalkTo(nearestHero);
-                    SleeperOrbWalker.Sleep(50);
+                    SleeperOrbWalker.Sleep(75);
                 }
+
+                #region comboitems
+                if (!SleeperOrder.Sleeping)
+                {
+                    try
+                    {
+                        new Veil_of_discord(myHero, nearestHero, comboItems, ref SleeperOrder);
+                    }
+                    catch
+                    {
+                        //todo
+                    }
+                }
+                if (!SleeperOrder.Sleeping)
+                {
+                    try
+                    {
+                        new Shivas_guard(myHero, nearestHero, comboItems, ref SleeperOrder);
+                    }
+                    catch
+                    {
+                        //todo
+                    }
+                }
+
+                if (!SleeperOrder.Sleeping)
+                {
+                    try
+                    {
+                        new Diffusal(myHero, nearestHero, comboItems, ref SleeperOrder);
+                    }
+                    catch
+                    {
+                        //todo
+                    }
+                }
+
+                if (!SleeperOrder.Sleeping)
+                {
+                    try
+                    {
+                        new Sheepstick(myHero, nearestHero, comboItems, ref SleeperOrder);
+                    }
+                    catch
+                    {
+                        //todo
+                    }
+                }
+
+                if (!SleeperOrder.Sleeping)
+                {
+                    try
+                    {
+                        new Urn(myHero, nearestHero, comboItems, ref SleeperOrder);
+                    }
+                    catch
+                    {
+                        //todo
+                    }
+                }
+
+                if (!SleeperOrder.Sleeping)
+                {
+                    try
+                    {
+                        new Spirit_Vessel(myHero, nearestHero, comboItems, ref SleeperOrder);
+                    }
+                    catch
+                    {
+                        //todo
+                    }
+                }
+
+                if (!SleeperOrder.Sleeping)
+                {
+                    try
+                    {
+                        new EBlade(myHero, nearestHero, comboItems, ref SleeperOrder);
+                    }
+                    catch
+                    {
+                        //todo
+                    }
+                }
+
+
+                #endregion
             }
 
             bool inRange = EntityManager.GetEntities<Hero>().Where(x => !x.IsAlly(myHero) && x.Distance2D(myHero) < 2100).Any();

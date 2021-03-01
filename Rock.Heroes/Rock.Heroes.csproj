@@ -70,7 +70,16 @@
   <ItemGroup>
     <Compile Include="BootStrap.cs" />
     <Compile Include="Context.cs" />
-    <Compile Include="Modules\AiEarthSpirit.cs" />
+    <Compile Include="Modules\AiEarthSpirit\EarthSpirit.cs" />
+    <Compile Include="Modules\AiEarthSpirit\Items\Abyssal.cs" />
+    <Compile Include="Modules\AiEarthSpirit\Items\Diffusal.cs" />
+    <Compile Include="Modules\AiEarthSpirit\Items\EBlade.cs" />
+    <Compile Include="Modules\AiEarthSpirit\Items\Spirit_Vessel.cs" />
+    <Compile Include="Modules\AiEarthSpirit\Items\Urn.cs" />
+    <Compile Include="Modules\AiEarthSpirit\Items\Sheepstick.cs" />
+    <Compile Include="Modules\AiEarthSpirit\Items\Shivas_guard.cs" />
+    <Compile Include="Modules\AiEarthSpirit\Items\ItemsHelper.cs" />
+    <Compile Include="Modules\AiEarthSpirit\Items\Veil_of_discord.cs" />
     <Compile Include="Modules\SfRazes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
