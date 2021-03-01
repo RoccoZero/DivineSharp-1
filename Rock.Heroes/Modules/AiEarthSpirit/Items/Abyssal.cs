@@ -21,7 +21,7 @@ namespace RockHeroes.Modules.EarthSpirit
                  && !target.IsStunned())
             {
                 ItemsHelper.CastItemEnemy(hero, target, item);
-                sleeper.Sleep(600);
+                sleeper.Sleep(300);
             }
         }
     }

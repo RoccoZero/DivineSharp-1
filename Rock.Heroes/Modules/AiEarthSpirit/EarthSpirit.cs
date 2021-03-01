@@ -34,6 +34,7 @@ namespace RockHeroes.Modules.EarthSpirit
         private bool IsIgnoreInput = false;
         public Sleeper SleeperOrder = new Sleeper();
         public Sleeper SleeperOrbWalker = new Sleeper();
+        public Sleeper SleeperItems = new Sleeper();
 
         public MenuItemToggler comboItems;
 
@@ -488,17 +489,6 @@ namespace RockHeroes.Modules.EarthSpirit
 
             if (holdKey && nearestHero != null && !nearestHero.HasModifier("modifier_eul_cyclone"))
             {
-                if (!SleeperOrder.Sleeping)
-                {
-                    try
-                    {
-                        new Abyssal(myHero, nearestHero, comboItems, ref SleeperOrder);
-                    }
-                    catch
-                    {
-                        //todo
-                    }
-                }
 
                 if (pull_ready && roll_ready && HasStoneInRadius(myHero, nearestHero.Position, 400) && !SleeperOrder.Sleeping && myHero.Mana >= pull.ManaCost + roll.ManaCost)
                 {
@@ -529,22 +519,12 @@ namespace RockHeroes.Modules.EarthSpirit
                 }
 
                 #region comboitems
-                if (!SleeperOrder.Sleeping)
+
+                if (!SleeperItems.Sleeping)
                 {
                     try
                     {
-                        new Veil_of_discord(myHero, nearestHero, comboItems, ref SleeperOrder);
-                    }
-                    catch
-                    {
-                        //todo
-                    }
-                }
-                if (!SleeperOrder.Sleeping)
-                {
-                    try
-                    {
-                        new Shivas_guard(myHero, nearestHero, comboItems, ref SleeperOrder);
+                        new Abyssal(myHero, nearestHero, comboItems, ref SleeperItems);
                     }
                     catch
                     {
@@ -552,11 +532,22 @@ namespace RockHeroes.Modules.EarthSpirit
                     }
                 }
 
-                if (!SleeperOrder.Sleeping)
+                if (!SleeperItems.Sleeping)
                 {
                     try
                     {
-                        new Diffusal(myHero, nearestHero, comboItems, ref SleeperOrder);
+                        new Veil_of_discord(myHero, nearestHero, comboItems, ref SleeperItems);
+                    }
+                    catch
+                    {
+                        //todo
+                    }
+                }
+                if (!SleeperItems.Sleeping)
+                {
+                    try
+                    {
+                        new Shivas_guard(myHero, nearestHero, comboItems, ref SleeperItems);
                     }
                     catch
                     {
@@ -564,11 +555,11 @@ namespace RockHeroes.Modules.EarthSpirit
                     }
                 }
 
-                if (!SleeperOrder.Sleeping)
+                if (!SleeperItems.Sleeping)
                 {
                     try
                     {
-                        new Sheepstick(myHero, nearestHero, comboItems, ref SleeperOrder);
+                        new Diffusal(myHero, nearestHero, comboItems, ref SleeperItems);
                     }
                     catch
                     {
@@ -576,11 +567,11 @@ namespace RockHeroes.Modules.EarthSpirit
                     }
                 }
 
-                if (!SleeperOrder.Sleeping)
+                if (!SleeperItems.Sleeping)
                 {
                     try
                     {
-                        new Urn(myHero, nearestHero, comboItems, ref SleeperOrder);
+                        new Sheepstick(myHero, nearestHero, comboItems, ref SleeperItems);
                     }
                     catch
                     {
@@ -588,11 +579,11 @@ namespace RockHeroes.Modules.EarthSpirit
                     }
                 }
 
-                if (!SleeperOrder.Sleeping)
+                if (!SleeperItems.Sleeping)
                 {
                     try
                     {
-                        new Spirit_Vessel(myHero, nearestHero, comboItems, ref SleeperOrder);
+                        new Urn(myHero, nearestHero, comboItems, ref SleeperItems);
                     }
                     catch
                     {
@@ -600,11 +591,11 @@ namespace RockHeroes.Modules.EarthSpirit
                     }
                 }
 
-                if (!SleeperOrder.Sleeping)
+                if (!SleeperItems.Sleeping)
                 {
                     try
                     {
-                        new EBlade(myHero, nearestHero, comboItems, ref SleeperOrder);
+                        new Spirit_Vessel(myHero, nearestHero, comboItems, ref SleeperItems);
                     }
                     catch
                     {
@@ -612,6 +603,17 @@ namespace RockHeroes.Modules.EarthSpirit
                     }
                 }
 
+                if (!SleeperItems.Sleeping)
+                {
+                    try
+                    {
+                        new EBlade(myHero, nearestHero, comboItems, ref SleeperItems);
+                    }
+                    catch
+                    {
+                        //todo
+                    }
+                }
 
                 #endregion
             }
