@@ -70,7 +70,7 @@ namespace RockHeroes.Modules
                 return;
             }
 
-            var target = EntityManager.GetEntities<Hero>().Where(x => x.Distance2D(GameManager.MousePosition) < 800 && x.IsVisible && !x.IsAlly(localHero)).OrderBy(x => x.Distance2D(GameManager.MousePosition)).FirstOrDefault();
+            var target = EntityManager.GetEntities<Hero>().Where(x => x.Distance2D(GameManager.MousePosition) < 800 && x.IsVisible && !x.IsAlly(localHero) && x.IsAlive).OrderBy(x => x.Distance2D(GameManager.MousePosition)).FirstOrDefault();
             if (target == null)
             {
                 return;
@@ -109,7 +109,7 @@ namespace RockHeroes.Modules
 
         private void HookHitCheck()
         {
-            var target = EntityManager.GetEntities<Hero>().Where(x => x.Distance2D(GameManager.MousePosition) < 800 && x.IsVisible && !x.IsAlly(localHero)).OrderBy(x => x.Distance2D(GameManager.MousePosition)).FirstOrDefault();
+            var target = EntityManager.GetEntities<Hero>().Where(x => x.Distance2D(GameManager.MousePosition) < 800 && x.IsVisible && !x.IsAlly(localHero) && x.IsAlive).OrderBy(x => x.Distance2D(GameManager.MousePosition)).FirstOrDefault();
             if (target == null)
             {
                 return;
