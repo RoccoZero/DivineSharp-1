@@ -59,6 +59,12 @@ namespace Utilities.Modules
         {
             Item blink = FindBlink(localHero);
             Vector3 mousePos = GameManager.MousePosition;
+            float blinkRange = 1195;
+            if (localHero.Inventory.MainItems.Any(x => x.Id == AbilityId.item_aether_lens))
+            {
+                blinkRange += 250;
+            }
+
             if (blink == null)
             {           
                 e.Process = true;
@@ -67,9 +73,9 @@ namespace Utilities.Modules
             if (blink.Cooldown == 0 && !e.IsCustom && e.Order.Ability == blink)
             {
                 var distance = localHero.Distance2D(mousePos);
-                if (distance > 1200)
+                if (distance > blinkRange + 5)
                 {
-                    blink.Cast(localHero.Position.Extend(mousePos, 1195));
+                    blink.Cast(localHero.Position.Extend(mousePos, blinkRange));
                     e.Process = false;
                     return;
                 }

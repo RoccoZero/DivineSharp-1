@@ -99,7 +99,7 @@ namespace RockHeroes.Modules
 
             var hookOutput = PredictionManager.GetPrediction(input);
 
-            if (/*hookOutput.HitChance != HitChance.OutOfRange &&*/ hookOutput.HitChance >= HitChance.Medium && hookOutput.HitChance != HitChance.Collision && hook.Cooldown == 0) /*&& !sleeper.Sleeping*/
+            if (hookOutput.HitChance >= HitChance.Medium && hookOutput.HitChance != HitChance.Collision && hook.Cooldown == 0) /*&& !sleeper.Sleeping*/
             {
                 HookCastPosition = hookOutput.UnitPosition;
                 hook.Cast(HookCastPosition);
