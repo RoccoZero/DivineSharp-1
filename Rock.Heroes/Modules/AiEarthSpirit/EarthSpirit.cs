@@ -29,6 +29,7 @@ namespace RockHeroes.Modules.EarthSpirit
         private float enchant_time;
         private float kick_time;
         private float roll_time;
+
         public Menu AiEarthSpiritMenu;
 
         private bool IsIgnoreInput = false;
@@ -52,14 +53,8 @@ namespace RockHeroes.Modules.EarthSpirit
 
         public EarthSpirit(Context context)
         {
-            if (EntityManager.LocalHero.HeroId != HeroId.npc_dota_hero_earth_spirit)
-            {
-                return;
-            }
-
             AiEarthSpiritMenu = context.rootMenu.CreateMenu("AI Earth Spirit").SetHeroTexture(Divine.HeroId.npc_dota_hero_earth_spirit);
             isEnable = AiEarthSpiritMenu.CreateSwitcher("On/Off");
-            isEnable.ValueChanged += isEnableChanged;
 
             holdKey = AiEarthSpiritMenu.CreateHoldKey("Dynamic сombo key", Key.None);
             AutoStone = AiEarthSpiritMenu.CreateSwitcher("Auto Stone if W", false);
@@ -67,6 +62,12 @@ namespace RockHeroes.Modules.EarthSpirit
             autoUltiCount = AiEarthSpiritMenu.CreateSlider("Enemyes for ult", 3, 0, 5).SetTooltip("If set to 0, it doesn't work");
             comboItems = AiEarthSpiritMenu.CreateItemToggler("Combo Items", cItems);
 
+            if (EntityManager.LocalHero.HeroId != HeroId.npc_dota_hero_earth_spirit)
+            {
+                return;
+            }
+
+            isEnable.ValueChanged += isEnableChanged;
         }
 
         internal void Dispose()

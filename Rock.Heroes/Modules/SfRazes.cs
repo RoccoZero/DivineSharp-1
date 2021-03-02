@@ -14,15 +14,14 @@ namespace RockHeroes.Modules
 
         public SfRazes(Context context)
         {
-            if (EntityManager.LocalHero.HeroId != HeroId.npc_dota_hero_nevermore)
-            {
-                return;
-            }
-
             var SfRazesMenu = context.rootMenu.CreateMenu("SF helper").SetHeroTexture(HeroId.npc_dota_hero_nevermore);
             Razes2Mouse = SfRazesMenu.CreateSwitcher("Shadowrazes to mouse direction");
             DrawRazes = SfRazesMenu.CreateSwitcher("Draw Shadowrazes");
             ColorSwitcher = SfRazesMenu.CreateSlider("Colors", 0, 0, 6);
+            if (EntityManager.LocalHero.HeroId != HeroId.npc_dota_hero_nevermore)
+            {
+                return;
+            }
 
             OrderManager.OrderAdding += OnUnitOrder;
             DrawRazes.ValueChanged += DrawRazes_ValueChanged;
