@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace RockRubick
 {
-    internal sealed class SpellStillHelper
+    internal sealed class SpellStealHelper
     {
         public static bool IsCastable(Hero localHero, Ability ability) //Проверка на возможность скастовать
         {

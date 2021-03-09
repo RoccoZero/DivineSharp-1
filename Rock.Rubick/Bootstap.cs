@@ -13,7 +13,7 @@ namespace RockRubick
 
             Menu.MenuBootstrap();
             new General();
-            new SpellStillMain();
+            new SpellStealMain();
         }
     }
 }

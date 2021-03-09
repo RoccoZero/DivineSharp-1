@@ -21,11 +21,11 @@ namespace RockRubick
         {
             if (e.Value)
             {
-                new SpellStillMain();
+                new SpellStealMain();
             }
             else
             {
-                SpellStillMain.Dispose();
+                SpellStealMain.Dispose();
             }
         }
 

@@ -5,9 +5,9 @@ using System.Linq;
 
 namespace RockRubick
 {
-    internal sealed class SpellStillLogic
+    internal sealed class SpellStealLogic
     {
-        public SpellStillLogic()
+        public SpellStealLogic()
         {
             var main = General.localHero.Spellbook.Spell4;
             var ult = General.localHero.Spellbook.Spell6;
@@ -19,7 +19,7 @@ namespace RockRubick
 
             if (Dictionaries.LastSpell.Count > 1)
             {
-                Dictionaries.LastSpell = SpellStillHelper.OrderLastSpell(Dictionaries.LastSpell, Dictionaries.SpellList);
+                Dictionaries.LastSpell = SpellStealHelper.OrderLastSpell(Dictionaries.LastSpell, Dictionaries.SpellList);
             }
 
             var lastSpell = Dictionaries.LastSpell.Where(x => x.Key.IsVisible && x.Key.Distance2D(General.localHero) < 1500).FirstOrDefault();

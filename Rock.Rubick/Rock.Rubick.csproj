@@ -60,11 +60,11 @@
     <Compile Include="SpellStillManager\CooldownManager.cs" />
     <Compile Include="SpellStillManager\LastSpellManager.cs" />
     <Compile Include="SpellStillManager\Modes\AghanimMode.cs" />
-    <Compile Include="SpellStillManager\Modes\SpellStillLogic.cs" />
+    <Compile Include="SpellStillManager\Modes\SpellStealLogic.cs" />
     <Compile Include="SpellStillManager\Modes\NonAghanimMode.cs" />
-    <Compile Include="SpellStillManager\SpellStillHelper.cs" />
+    <Compile Include="SpellStillManager\SpellStealHelper.cs" />
     <Compile Include="SpellStillManager\Dictionaries.cs" />
-    <Compile Include="SpellStillManager\SpellStillMain.cs" />
+    <Compile Include="SpellStillManager\SpellStealMain.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

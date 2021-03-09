@@ -21,25 +21,37 @@ namespace RockRubick
             ParticleManager.ParticleAdded -= ParticleSpecific;
         }
 
+        private static void AddSpecific(Hero hero, AbilityId abilityId)
+        {
+            if (!Dictionaries.LastSpell.ContainsKey(hero))
+            {
+                Dictionaries.LastSpell.Add(hero, abilityId);
+            }
+            else
+            {
+                Dictionaries.LastSpell.Remove(hero);
+                Dictionaries.LastSpell.Add(hero, abilityId);
+            }
+        }
+
         private static void ParticleSpecific(ParticleAddedEventArgs e)
         {
-            if (e.Particle.Owner == General.localHero)
+            var particle = e.Particle;
+            if (particle.Owner == General.localHero)
             {
                 return;
             }
-            if (e.Particle.Name == "particles/units/heroes/hero_earthshaker/earthshaker_echoslam_start.vpcf")
+            if (particle.Name == "particles/units/heroes/hero_earthshaker/earthshaker_echoslam_start.vpcf")
             {
                 var shaker = (Hero)e.Particle.Owner;
-                if (!Dictionaries.LastSpell.ContainsKey(shaker))
-                {
-                    Dictionaries.LastSpell.Add(shaker, AbilityId.earthshaker_echo_slam);
-                }
-                else
-                {
-                    Dictionaries.LastSpell.Remove(shaker);
-                    Dictionaries.LastSpell.Add(shaker, AbilityId.earthshaker_echo_slam); //TODO . В будущем написать функцию для добавления
-                }
+                AddSpecific(shaker, AbilityId.earthshaker_echo_slam);
             }
+
+            if (e.Particle.Name == "particles/units/heroes/hero_void_spirit/aether_remnant/void_spirit_aether_remnant_pre.vpcf")
+            {
+                AddSpecific((Hero)e.Particle.Owner.Owner, AbilityId.void_spirit_aether_remnant);
+            }
+            //Console.WriteLine($"{e.Particle.Owner.Owner.Name} | {e.Particle.Name}");
         }
 
         private static void InGameUpdate()

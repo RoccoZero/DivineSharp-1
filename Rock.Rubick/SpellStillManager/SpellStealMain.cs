@@ -1,12 +1,11 @@
 ﻿using Divine;
 using Divine.SDK.Extensions;
-using System;
 
 namespace RockRubick
 {
-    internal sealed class SpellStillMain
+    internal sealed class SpellStealMain
     {
-        public SpellStillMain() //Если свитчер переводят в состояние On
+        public SpellStealMain() //Если свитчер переводят в состояние On
         {
             new Dictionaries();
             new LastSpellManager();

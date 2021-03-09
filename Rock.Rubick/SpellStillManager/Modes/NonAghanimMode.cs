@@ -30,7 +30,7 @@ namespace RockRubick
         {
             ClearingUseless();
 
-            new SpellStillLogic();
+            new SpellStealLogic();
         }
     }
 }
