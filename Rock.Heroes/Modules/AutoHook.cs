@@ -99,7 +99,7 @@ namespace RockHeroes.Modules
 
             var hookOutput = PredictionManager.GetPrediction(input);
 
-            if (hookOutput.HitChance >= HitChance.Medium && hookOutput.HitChance != HitChance.Collision && hook.Cooldown == 0) /*&& !sleeper.Sleeping*/
+            if (hookOutput.HitChance >= (HitChance)4 && hookOutput.HitChance != HitChance.Collision && hook.Cooldown == 0) /*&& !sleeper.Sleeping*/
             {
                 HookCastPosition = hookOutput.UnitPosition;
                 hook.Cast(HookCastPosition);
@@ -138,7 +138,7 @@ namespace RockHeroes.Modules
 
             var hookOutput = PredictionManager.GetPrediction(input);
 
-            if ((hookOutput.HitChance == HitChance.OutOfRange || hookOutput.HitChance == HitChance.Collision || hookOutput.HitChance == HitChance.Impossible || target.IsRotating() || hookOutput.HitChance == HitChance.Low)/* && !sleeper.Sleeping*/)
+            if ((hookOutput.HitChance == HitChance.OutOfRange || hookOutput.HitChance < (HitChance)4 || hookOutput.HitChance == HitChance.Collision || hookOutput.HitChance == HitChance.Impossible || target.IsRotating() || hookOutput.HitChance == HitChance.Low)/* && !sleeper.Sleeping*/)
             {
                 localHero.Stop();
                 //sleeper.Sleep(50);
