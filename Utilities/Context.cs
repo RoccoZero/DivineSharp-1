@@ -20,7 +20,7 @@ namespace Utilities
             creepblock = new Creepblocker(this);
             autoDust = new AutoDust(this);
             maxBlinkRange = new MaxBlinkRange(this);
-            
+
         }
         public void Dispose()
         {
