@@ -43,8 +43,7 @@ namespace RockRubick
             }
             if (particle.Name == "particles/units/heroes/hero_earthshaker/earthshaker_echoslam_start.vpcf")
             {
-                var shaker = (Hero)e.Particle.Owner;
-                AddSpecific(shaker, AbilityId.earthshaker_echo_slam);
+                AddSpecific((Hero)e.Particle.Owner, AbilityId.earthshaker_echo_slam);
             }
 
             if (e.Particle.Name == "particles/units/heroes/hero_void_spirit/aether_remnant/void_spirit_aether_remnant_pre.vpcf")

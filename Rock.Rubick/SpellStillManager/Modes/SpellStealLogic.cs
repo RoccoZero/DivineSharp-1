@@ -22,7 +22,14 @@ namespace RockRubick
                 Dictionaries.LastSpell = SpellStealHelper.OrderLastSpell(Dictionaries.LastSpell, Dictionaries.SpellList);
             }
 
-            var lastSpell = Dictionaries.LastSpell.Where(x => x.Key.IsVisible && x.Key.Distance2D(General.localHero) < 1500).FirstOrDefault();
+            var lastSpell = Dictionaries.LastSpell.Where(x => x.Key.IsVisible && x.Key.Distance2D(General.localHero) < 1500 && (x.Key.GetAbilityById(x.Value).Level + 1 >= main.Level
+            || Dictionaries.SpellList.Where(y => y.Key == main.Id).FirstOrDefault().Value >= 4)).FirstOrDefault(); // for test
+
+
+            if (lastSpell.Key == null)
+            {
+                return;
+            }
 
             if (main.Id == AbilityId.rubick_empty1 && !General.sleeper.Sleeping)
             {
