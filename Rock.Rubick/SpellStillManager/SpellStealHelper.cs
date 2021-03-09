@@ -6,6 +6,23 @@ namespace RockRubick
 {
     internal sealed class SpellStealHelper
     {
+        public static List<AbilityId> toggleableAbilityes = new List<AbilityId> 
+        { 
+            AbilityId.ancient_apparition_chilling_touch, 
+            AbilityId.clinkz_searing_arrows,
+            AbilityId.doom_bringer_infernal_blade,
+            AbilityId.drow_ranger_frost_arrows,
+            AbilityId.enchantress_impetus,
+            AbilityId.storm_spirit_ball_lightning,
+            AbilityId.huskar_burning_spear,
+            AbilityId.jakiro_liquid_fire,
+            AbilityId.pudge_rot,
+            AbilityId.morphling_morph,
+            AbilityId.pugna_life_drain,
+            AbilityId.sniper_take_aim,
+            AbilityId.witch_doctor_voodoo_restoration
+        };
+
         public static bool IsCastable(Hero localHero, Ability ability) //Проверка на возможность скастовать
         {
             if (localHero.Mana > ability.ManaCost && ability.Cooldown == 0)

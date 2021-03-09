@@ -45,11 +45,11 @@ namespace RockRubick
             {
                 return;
             }
-            if (main.Charges == 0 && main.Cooldown == 0)
+            if (main.Charges == 0 && main.Cooldown == 0 && !SpellStealHelper.toggleableAbilityes.Contains(main.Id))
             {
                 return;
             }
-            if (main.Charges != 0 && main.Charges <= main.CurrentCharges + 1)
+            else if (main.Charges != 0 && main.Charges <= main.CurrentCharges + 1)
             {
                 return;
             }
