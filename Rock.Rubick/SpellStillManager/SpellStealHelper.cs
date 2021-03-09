@@ -20,7 +20,8 @@ namespace RockRubick
             AbilityId.morphling_morph,
             AbilityId.pugna_life_drain,
             AbilityId.sniper_take_aim,
-            AbilityId.witch_doctor_voodoo_restoration
+            AbilityId.witch_doctor_voodoo_restoration,
+            AbilityId.windrunner_windrun
         };
 
         public static bool IsCastable(Hero localHero, Ability ability) //Проверка на возможность скастовать
