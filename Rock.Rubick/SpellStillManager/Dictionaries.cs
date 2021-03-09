@@ -203,6 +203,7 @@ namespace RockRubick
             {AbilityId.weaver_time_lapse, 4},
             {AbilityId.windrunner_powershot, 3},
             {AbilityId.windrunner_shackleshot, 3},
+            {AbilityId.windrunner_focusfire, 3},
             {AbilityId.winter_wyvern_winters_curse, 4},
             {AbilityId.winter_wyvern_splinter_blast, 3},
             {AbilityId.winter_wyvern_cold_embrace, 1},
