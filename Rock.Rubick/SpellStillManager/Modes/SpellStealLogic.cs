@@ -23,7 +23,7 @@ namespace RockRubick
             }
 
             var lastSpell = Dictionaries.LastSpell.Where(x => x.Key.IsVisible && x.Key.Distance2D(General.localHero) < 1500 && (x.Key.GetAbilityById(x.Value).Level + 1 >= main.Level
-            || Dictionaries.SpellList.Where(y => y.Key == main.Id).FirstOrDefault().Value >= 4)).FirstOrDefault(); // for test
+            || Dictionaries.SpellList.Where(y => y.Key == main.Id).FirstOrDefault().Value >= 3)).FirstOrDefault(); // for test
 
 
             if (lastSpell.Key == null)
