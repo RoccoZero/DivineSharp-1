@@ -6,9 +6,9 @@ namespace RockRubick
 {
     internal sealed class SpellStealHelper
     {
-        public static List<AbilityId> toggleableAbilityes = new List<AbilityId> 
-        { 
-            AbilityId.ancient_apparition_chilling_touch, 
+        public static List<AbilityId> toggleableAbilityes = new List<AbilityId>
+        {
+            AbilityId.ancient_apparition_chilling_touch,
             AbilityId.clinkz_searing_arrows,
             AbilityId.doom_bringer_infernal_blade,
             AbilityId.drow_ranger_frost_arrows,
@@ -21,7 +21,8 @@ namespace RockRubick
             AbilityId.pugna_life_drain,
             AbilityId.sniper_take_aim,
             AbilityId.witch_doctor_voodoo_restoration,
-            AbilityId.windrunner_windrun
+            AbilityId.windrunner_windrun,
+            AbilityId.tinker_rearm
         };
 
         public static bool IsCastable(Hero localHero, Ability ability) //Проверка на возможность скастовать
