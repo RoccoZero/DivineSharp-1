@@ -22,7 +22,9 @@ namespace RockRubick
             AbilityId.sniper_take_aim,
             AbilityId.witch_doctor_voodoo_restoration,
             AbilityId.windrunner_windrun,
-            AbilityId.tinker_rearm
+            AbilityId.tinker_rearm,
+            AbilityId.morphling_morph_agi,
+            AbilityId.morphling_morph_str
         };
 
         public static bool IsCastable(Hero localHero, Ability ability) //Проверка на возможность скастовать
