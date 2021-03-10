@@ -10,7 +10,8 @@ namespace RockRubick
         public static Dictionary<(Hero, AbilityId), float> Removed = new Dictionary<(Hero, AbilityId), float> { };
         public static List<AbilityId> ignore = new List<AbilityId> {
             AbilityId.lone_druid_true_form,
-            AbilityId.pudge_rot
+            AbilityId.pudge_rot,
+            AbilityId.witch_doctor_voodoo_restoration
         };
 
         public static readonly Dictionary<AbilityId, int> SpellList = new Dictionary<AbilityId, int>
