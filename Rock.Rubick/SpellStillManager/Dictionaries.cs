@@ -11,7 +11,11 @@ namespace RockRubick
         public static List<AbilityId> ignore = new List<AbilityId> {
             AbilityId.lone_druid_true_form,
             AbilityId.pudge_rot,
-            AbilityId.witch_doctor_voodoo_restoration
+            AbilityId.witch_doctor_voodoo_restoration,
+            AbilityId.medusa_split_shot,
+            AbilityId.bristleback_quill_spray,
+            AbilityId.bristleback_viscous_nasal_goo,
+            AbilityId.medusa_mana_shield
         };
 
         public static readonly Dictionary<AbilityId, int> SpellList = new Dictionary<AbilityId, int>

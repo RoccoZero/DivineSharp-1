@@ -24,7 +24,11 @@ namespace RockRubick
             AbilityId.windrunner_windrun,
             AbilityId.tinker_rearm,
             AbilityId.morphling_morph_agi,
-            AbilityId.morphling_morph_str
+            AbilityId.morphling_morph_str,
+            AbilityId.medusa_split_shot,
+            AbilityId.bristleback_quill_spray,
+            AbilityId.bristleback_viscous_nasal_goo,
+            AbilityId.medusa_mana_shield
         };
 
         public static bool IsCastable(Hero localHero, Ability ability) //Проверка на возможность скастовать
