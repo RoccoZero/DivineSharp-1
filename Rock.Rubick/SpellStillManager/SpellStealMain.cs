@@ -5,7 +5,7 @@ namespace RockRubick
 {
     internal sealed class SpellStealMain
     {
-        public SpellStealMain() //Если свитчер переводят в состояние On
+        public SpellStealMain()
         {
             new Dictionaries();
             new LastSpellManager();
@@ -14,7 +14,7 @@ namespace RockRubick
 
             UpdateManager.CreateIngameUpdate(25, IngameUpdate);
         }
-        public static void Dispose() //Если свитчер переводят в состояние Off
+        public static void Dispose()
         {
             LastSpellManager.Dispose();
             CooldownManager.Dispose();
@@ -22,7 +22,7 @@ namespace RockRubick
             UpdateManager.DestroyIngameUpdate(IngameUpdate);
         }
 
-        private static void IngameUpdate() //использование необходимых классов
+        private static void IngameUpdate() 
         {
             if (General.localHero.HasAghanimsScepter())
             {

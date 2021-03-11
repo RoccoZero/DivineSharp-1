@@ -8,7 +8,33 @@ namespace RockRubick
         public static Dictionary<AbilityId, float> RubickSpellCD = new Dictionary<AbilityId, float> { };
         public static Dictionary<Hero, AbilityId> LastSpell = new Dictionary<Hero, AbilityId> { };
         public static Dictionary<(Hero, AbilityId), float> Removed = new Dictionary<(Hero, AbilityId), float> { };
-        public static List<AbilityId> ignore = new List<AbilityId> {
+
+        public static List<AbilityId> ShitAbilities = new List<AbilityId>
+        {
+            AbilityId.ancient_apparition_chilling_touch,
+            AbilityId.clinkz_searing_arrows,
+            AbilityId.doom_bringer_infernal_blade,
+            AbilityId.drow_ranger_frost_arrows,
+            AbilityId.enchantress_impetus,
+            AbilityId.storm_spirit_ball_lightning,
+            AbilityId.huskar_burning_spear,
+            AbilityId.jakiro_liquid_fire,
+            AbilityId.pudge_rot,
+            AbilityId.morphling_morph,
+            AbilityId.pugna_life_drain,
+            AbilityId.sniper_take_aim,
+            AbilityId.witch_doctor_voodoo_restoration,
+            AbilityId.windrunner_windrun,
+            AbilityId.tinker_rearm,
+            AbilityId.morphling_morph_agi,
+            AbilityId.morphling_morph_str,
+            AbilityId.medusa_split_shot,
+            AbilityId.bristleback_quill_spray,
+            AbilityId.bristleback_viscous_nasal_goo,
+            AbilityId.medusa_mana_shield
+        };
+
+        public static List<AbilityId> Ignore = new List<AbilityId> {
             AbilityId.lone_druid_true_form,
             AbilityId.pudge_rot,
             AbilityId.witch_doctor_voodoo_restoration,

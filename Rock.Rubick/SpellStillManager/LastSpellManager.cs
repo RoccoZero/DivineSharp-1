@@ -8,7 +8,7 @@ namespace RockRubick
     internal sealed class LastSpellManager
     {
 
-        public LastSpellManager() //Активация лучшей памяти на спелы среди всех скриптов на рубика!)
+        public LastSpellManager()
         {
             UpdateManager.CreateIngameUpdate(50, InGameUpdate);
             ParticleManager.ParticleAdded += ParticleSpecific;

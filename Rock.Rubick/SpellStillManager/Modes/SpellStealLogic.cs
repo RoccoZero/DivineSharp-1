@@ -23,7 +23,7 @@ namespace RockRubick
             }
 
             var lastSpell = Dictionaries.LastSpell.Where(x => x.Key.IsVisible && x.Value != main.Id && x.Key.Distance2D(General.localHero) < 1500 && (x.Key.GetAbilityById(x.Value).Level + 1 >= main.Level
-            || Dictionaries.SpellList.Where(y => y.Key == main.Id).FirstOrDefault().Value >= 2) && !Dictionaries.ignore.Contains(x.Value)).FirstOrDefault(); // for test
+            || Dictionaries.SpellList.Where(y => y.Key == main.Id).FirstOrDefault().Value >= 2) && !Dictionaries.Ignore.Contains(x.Value)).FirstOrDefault(); // for test
 
 
             if (lastSpell.Key == null)
@@ -45,7 +45,7 @@ namespace RockRubick
             {
                 return;
             }
-            if (main.Charges == 0 && main.Cooldown == 0 && !SpellStealHelper.toggleableAbilityes.Contains(main.Id))
+            if (main.Charges == 0 && main.Cooldown == 0 && !Dictionaries.ShitAbilities.Contains(main.Id))
             {
                 return;
             }
