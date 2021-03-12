@@ -31,7 +31,8 @@ namespace RockRubick
             AbilityId.medusa_split_shot,
             AbilityId.bristleback_quill_spray,
             AbilityId.bristleback_viscous_nasal_goo,
-            AbilityId.medusa_mana_shield
+            AbilityId.medusa_mana_shield,
+            AbilityId.skeleton_king_vampiric_aura
         };
 
         public static List<AbilityId> Ignore = new List<AbilityId> {
@@ -41,7 +42,9 @@ namespace RockRubick
             AbilityId.medusa_split_shot,
             AbilityId.bristleback_quill_spray,
             AbilityId.bristleback_viscous_nasal_goo,
-            AbilityId.medusa_mana_shield
+            AbilityId.medusa_mana_shield,
+            AbilityId.skeleton_king_vampiric_aura
+
         };
 
         public static readonly Dictionary<AbilityId, int> SpellList = new Dictionary<AbilityId, int>

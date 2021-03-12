@@ -62,7 +62,7 @@ namespace RockRubick
                 {
                     if (GameManager.GameTime > v.Value)
                     {
-                        Dictionaries.RubickSpellCD.Remove(v.Key); 
+                        Dictionaries.RubickSpellCD.Remove(v.Key);
                     }
                 }
             }

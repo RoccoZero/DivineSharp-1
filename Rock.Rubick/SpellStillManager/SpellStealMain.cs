@@ -23,7 +23,7 @@ namespace RockRubick
             UpdateManager.DestroyIngameUpdate(IngameUpdate);
         }
 
-        private static void IngameUpdate() 
+        private static void IngameUpdate()
         {
             if (General.localHero.HasAghanimsScepter())
             {

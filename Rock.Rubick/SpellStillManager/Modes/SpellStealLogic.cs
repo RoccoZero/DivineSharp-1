@@ -11,6 +11,7 @@ namespace RockRubick
         {
             var main = General.localHero.Spellbook.Spell4;
             var ult = General.localHero.Spellbook.Spell6;
+            float range = ult.CastRange;
 
             if (Dictionaries.LastSpell == null || Dictionaries.LastSpell.Count == 0)
             {
@@ -22,7 +23,7 @@ namespace RockRubick
                 Dictionaries.LastSpell = SpellStealHelper.OrderLastSpell(Dictionaries.LastSpell, Dictionaries.SpellList);
             }
 
-            var lastSpell = Dictionaries.LastSpell.Where(x => x.Key.IsVisible && x.Value != main.Id && x.Key.Distance2D(General.localHero) < 1500 && (x.Key.GetAbilityById(x.Value).Level + 1 >= main.Level
+            var lastSpell = Dictionaries.LastSpell.Where(x => x.Key.IsVisible && x.Value != main.Id && x.Key.Distance2D(General.localHero) < range && (x.Key.GetAbilityById(x.Value).Level + 1 >= main.Level
             || Dictionaries.SpellList.Where(y => y.Key == main.Id).FirstOrDefault().Value >= 2) && !Dictionaries.Ignore.Contains(x.Value)).FirstOrDefault(); // for test
 
 
@@ -54,7 +55,7 @@ namespace RockRubick
                 return;
             }
 
-            if (General.localHero.Distance2D(lastSpell.Key) < 1500)
+            if (General.localHero.Distance2D(lastSpell.Key) < range)
             {
                 UpdateManager.BeginInvoke((int)Math.Floor(lastSpell.Key.GetAbilityById(lastSpell.Value).CastPoint * 1000), () =>
                 {
