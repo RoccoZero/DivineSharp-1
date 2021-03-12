@@ -12,6 +12,7 @@ namespace RockRubick
             new CooldownManager();
             //new ConsoleWriter();
 
+
             UpdateManager.CreateIngameUpdate(25, IngameUpdate);
         }
         public static void Dispose()
