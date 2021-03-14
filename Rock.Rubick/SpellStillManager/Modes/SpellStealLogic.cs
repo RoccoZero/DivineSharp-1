@@ -1,6 +1,6 @@
 ﻿using Divine;
 using Divine.SDK.Extensions;
-using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace RockRubick
@@ -23,8 +23,11 @@ namespace RockRubick
                 Dictionaries.LastSpell = SpellStealHelper.OrderLastSpell(Dictionaries.LastSpell, Dictionaries.SpellList);
             }
 
-            var lastSpell = Dictionaries.LastSpell.Where(x => x.Key.IsVisible && x.Value != main.Id && x.Key.Distance2D(General.localHero) < range && (x.Key.GetAbilityById(x.Value).Level + 1 >= main.Level
-            || Dictionaries.SpellList.Where(y => y.Key == main.Id).FirstOrDefault().Value >= 2) && !Dictionaries.Ignore.Contains(x.Value)).FirstOrDefault(); // for test
+            KeyValuePair<Hero, AbilityId> lastSpell = new KeyValuePair<Hero, AbilityId>();
+
+            lastSpell = Dictionaries.LastSpell.Where(x => x.Key.IsVisible && x.Value != main.Id && x.Key.Distance2D(General.localHero) < range && (x.Key.GetAbilityById(x.Value).Level + 1 >= main.Level
+            || Dictionaries.SpellList.Where(y => y.Key == main.Id)
+                                     .FirstOrDefault().Value >= 2) && !Dictionaries.Ignore.Contains(x.Value)).FirstOrDefault();
 
 
             if (lastSpell.Key == null)
@@ -32,14 +35,11 @@ namespace RockRubick
                 return;
             }
 
-            if (main.Id == AbilityId.rubick_empty1 && !General.sleeper.Sleeping)
+            if ((main.Id == AbilityId.rubick_empty1 || Dictionaries.HasChargesWithAghanim.ContainsKey(main.Id) && main.CurrentCharges < Dictionaries.HasChargesWithAghanim.Where(x => x.Key == main.Id).FirstOrDefault().Value) && !General.sleeper.Sleeping)
             {
                 General.sleeper.Sleep(750);
-                //UpdateManager.BeginInvoke((int)Math.Floor(lastSpell.Key.GetAbilityById(lastSpell.Value).CastPoint * 1000 - 100), () =>
-                {
-                    ult.Cast(lastSpell.Key);
-                    return;
-                }//);
+                ult.Cast(lastSpell.Key);
+                return;
             }
 
             if (main.Id == lastSpell.Value || General.sleeper.Sleeping)
@@ -58,10 +58,7 @@ namespace RockRubick
             if (General.localHero.Distance2D(lastSpell.Key) < range)
             {
                 General.sleeper.Sleep(750);
-                //UpdateManager.BeginInvoke((int)Math.Floor(lastSpell.Key.GetAbilityById(lastSpell.Value).CastPoint * 1000 - 100), () =>
-                {
-                        ult.Cast(lastSpell.Key);
-                }//);
+                ult.Cast(lastSpell.Key);
 
             }
         }

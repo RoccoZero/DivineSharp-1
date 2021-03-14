@@ -9,6 +9,14 @@ namespace RockRubick
         public static Dictionary<Hero, AbilityId> LastSpell = new Dictionary<Hero, AbilityId> { };
         public static Dictionary<(Hero, AbilityId), float> Removed = new Dictionary<(Hero, AbilityId), float> { };
 
+        public static Dictionary<AbilityId, int> HasChargesWithAghanim = new Dictionary<AbilityId, int>
+        {
+            { AbilityId.shadow_demon_demonic_purge, 3 },
+            { AbilityId.bloodseeker_rupture, 2 },
+            { AbilityId.void_spirit_resonant_pulse, 2 },
+            { AbilityId.obsidian_destroyer_astral_imprisonment, 2 }
+        };
+
         public static List<AbilityId> ShitAbilities = new List<AbilityId>
         {
             AbilityId.ancient_apparition_chilling_touch,
@@ -32,7 +40,10 @@ namespace RockRubick
             AbilityId.bristleback_quill_spray,
             AbilityId.bristleback_viscous_nasal_goo,
             AbilityId.medusa_mana_shield,
-            AbilityId.skeleton_king_vampiric_aura
+            AbilityId.skeleton_king_vampiric_aura,
+            AbilityId.slark_pounce,
+            AbilityId.slark_shadow_dance,
+            AbilityId.slark_dark_pact
         };
 
         public static List<AbilityId> Ignore = new List<AbilityId> {
@@ -43,8 +54,10 @@ namespace RockRubick
             AbilityId.bristleback_quill_spray,
             AbilityId.bristleback_viscous_nasal_goo,
             AbilityId.medusa_mana_shield,
-            AbilityId.skeleton_king_vampiric_aura
-
+            AbilityId.skeleton_king_vampiric_aura,
+            AbilityId.slark_pounce,
+            AbilityId.slark_shadow_dance,
+            AbilityId.slark_dark_pact
         };
 
         public static readonly Dictionary<AbilityId, int> SpellList = new Dictionary<AbilityId, int>
@@ -199,8 +212,6 @@ namespace RockRubick
             {AbilityId.skywrath_mage_concussive_shot, 2},
             {AbilityId.skywrath_mage_ancient_seal, 3},
             {AbilityId.skywrath_mage_mystic_flare, 4},
-            {AbilityId.slark_shadow_dance, 2 },
-            {AbilityId.slark_pounce, 2},
             {AbilityId.snapfire_scatterblast, 3},
             {AbilityId.snapfire_firesnap_cookie, 3},
             {AbilityId.snapfire_mortimer_kisses, 5},

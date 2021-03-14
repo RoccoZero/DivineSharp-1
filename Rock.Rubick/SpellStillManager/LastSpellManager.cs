@@ -12,6 +12,7 @@ namespace RockRubick
         {
             UpdateManager.CreateIngameUpdate(50, InGameUpdate);
             ParticleManager.ParticleAdded += ParticleSpecific;
+
         }
 
 
@@ -41,6 +42,7 @@ namespace RockRubick
             {
                 return;
             }
+
             if (particle.Name == "particles/units/heroes/hero_earthshaker/earthshaker_echoslam_start.vpcf")
             {
                 AddSpecific((Hero)e.Particle.Owner, AbilityId.earthshaker_echo_slam);
@@ -50,10 +52,12 @@ namespace RockRubick
             {
                 AddSpecific((Hero)e.Particle.Owner.Owner, AbilityId.void_spirit_aether_remnant);
             }
+
             if (e.Particle.Name == "particles/units/heroes/hero_shredder/shredder_whirling_death.vpcf")
             {
                 AddSpecific((Hero)e.Particle.Owner, AbilityId.shredder_whirling_death);
             }
+
             //Console.WriteLine($"{e.Particle.Owner.Name} | {e.Particle.Name}");
         }
 
@@ -85,8 +89,7 @@ namespace RockRubick
                     {
                         Dictionaries.LastSpell.Add(enemy, ability.Id);
                     }
-                    
-                    //Dictionaries.LastSpell.Add(enemy, ability.Id);
+
                 }
                 else
                 {
