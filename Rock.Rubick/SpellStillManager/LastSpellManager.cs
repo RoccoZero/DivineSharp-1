@@ -38,6 +38,7 @@ namespace RockRubick
         private static void ParticleSpecific(ParticleAddedEventArgs e)
         {
             var particle = e.Particle;
+
             if (particle.Owner == General.localHero)
             {
                 return;
@@ -45,19 +46,46 @@ namespace RockRubick
 
             if (particle.Name == "particles/units/heroes/hero_earthshaker/earthshaker_echoslam_start.vpcf")
             {
-                AddSpecific((Hero)e.Particle.Owner, AbilityId.earthshaker_echo_slam);
+                AddSpecific((Hero)particle.Owner, AbilityId.earthshaker_echo_slam);
+                return;
             }
 
-            if (e.Particle.Name == "particles/units/heroes/hero_void_spirit/aether_remnant/void_spirit_aether_remnant_pre.vpcf")
+            if (particle.Name == "particles/units/heroes/hero_void_spirit/aether_remnant/void_spirit_aether_remnant_pre.vpcf")
             {
-                AddSpecific((Hero)e.Particle.Owner.Owner, AbilityId.void_spirit_aether_remnant);
+                AddSpecific((Hero)particle.Owner.Owner, AbilityId.void_spirit_aether_remnant);
+                return;
             }
 
-            if (e.Particle.Name == "particles/units/heroes/hero_shredder/shredder_whirling_death.vpcf")
+            if (particle.Name == "particles/units/heroes/hero_shredder/shredder_whirling_death.vpcf")
             {
-                AddSpecific((Hero)e.Particle.Owner, AbilityId.shredder_whirling_death);
+                AddSpecific((Hero)particle.Owner, AbilityId.shredder_whirling_death);
+                return;
             }
-
+            if (particle.Name == "particles/units/heroes/hero_pangolier/pangolier_swashbuckler_dash.vpcf")
+            {
+                Hero hero = (Hero)particle.Owner;
+                AddSpecific(hero, AbilityId.pangolier_swashbuckle);
+                return;
+            }
+            if (particle.Name == "particles/units/heroes/hero_pangolier/pangolier_tailthump_cast.vpcf")
+            {
+                Hero hero = (Hero)particle.Owner;
+                AddSpecific(hero, AbilityId.pangolier_shield_crash);
+                return;
+            }
+            if (particle.Name == "particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot_cast.vpcf")
+            {
+                Hero hero = (Hero)particle.Owner;
+                AddSpecific(hero, AbilityId.skywrath_mage_concussive_shot);
+                return;
+            }
+            if (particle.Name == "particles/units/heroes/hero_pudge/pudge_rot.vpcf")
+            {
+                Hero hero = (Hero)particle.Owner;
+                AddSpecific(hero, AbilityId.pudge_rot);
+                return;
+            }
+            
             //Console.WriteLine($"{e.Particle.Owner.Name} | {e.Particle.Name}");
         }
 
@@ -75,9 +103,9 @@ namespace RockRubick
                 var cp = ability.CastPoint;
                 if (!enemy.Spellbook.Spells.Any(x => Dictionaries.LastSpell.ContainsKey(enemy)))
                 {
-                    if (cp * 1000 >= 60)
+                    if (cp * 1000 > 100)
                     {
-                        UpdateManager.BeginInvoke((int)(cp * 1000 - 50), () =>
+                        UpdateManager.BeginInvoke((int)(cp * 1000 - 100), () =>
                         {
                             if (ability.IsInAbilityPhase)
                             {
@@ -93,9 +121,9 @@ namespace RockRubick
                 }
                 else
                 {
-                    if (cp * 1000 >= 60)
+                    if (cp * 1000 > 100)
                     {
-                        UpdateManager.BeginInvoke((int)(ability.CastPoint * 1000 - 50), () =>
+                        UpdateManager.BeginInvoke((int)(ability.CastPoint * 1000 - 100), () =>
                         {
                             if (ability.IsInAbilityPhase)
                             {
