@@ -50,7 +50,11 @@ namespace RockRubick
             {
                 AddSpecific((Hero)e.Particle.Owner.Owner, AbilityId.void_spirit_aether_remnant);
             }
-            //Console.WriteLine($"{e.Particle.Owner.Owner.Name} | {e.Particle.Name}");
+            if (e.Particle.Name == "particles/units/heroes/hero_shredder/shredder_whirling_death.vpcf")
+            {
+                AddSpecific((Hero)e.Particle.Owner, AbilityId.shredder_whirling_death);
+            }
+            //Console.WriteLine($"{e.Particle.Owner.Name} | {e.Particle.Name}");
         }
 
         private static void InGameUpdate()
@@ -63,14 +67,45 @@ namespace RockRubick
                 {
                     continue;
                 }
+                var e = enemy;
+                var cp = ability.CastPoint;
                 if (!enemy.Spellbook.Spells.Any(x => Dictionaries.LastSpell.ContainsKey(enemy)))
                 {
-                    Dictionaries.LastSpell.Add(enemy, ability.Id);
+                    if (cp * 1000 >= 60)
+                    {
+                        UpdateManager.BeginInvoke((int)(cp * 1000 - 50), () =>
+                        {
+                            if (ability.IsInAbilityPhase)
+                            {
+                                Dictionaries.LastSpell.Add(enemy, ability.Id);
+                            }
+                        });
+                    }
+                    else
+                    {
+                        Dictionaries.LastSpell.Add(enemy, ability.Id);
+                    }
+                    
+                    //Dictionaries.LastSpell.Add(enemy, ability.Id);
                 }
                 else
                 {
-                    Dictionaries.LastSpell.Remove(enemy);
-                    Dictionaries.LastSpell.Add(enemy, ability.Id);
+                    if (cp * 1000 >= 60)
+                    {
+                        UpdateManager.BeginInvoke((int)(ability.CastPoint * 1000 - 50), () =>
+                        {
+                            if (ability.IsInAbilityPhase)
+                            {
+                                Dictionaries.LastSpell.Remove(enemy);
+                                Dictionaries.LastSpell.Add(enemy, ability.Id);
+                            }
+                        });
+                    }
+                    else
+                    {
+                        Dictionaries.LastSpell.Remove(enemy);
+                        Dictionaries.LastSpell.Add(enemy, ability.Id);
+                    }
                 }
 
             }

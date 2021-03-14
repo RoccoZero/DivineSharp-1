@@ -34,12 +34,12 @@ namespace RockRubick
 
             if (main.Id == AbilityId.rubick_empty1 && !General.sleeper.Sleeping)
             {
-                UpdateManager.BeginInvoke(400, () =>
+                General.sleeper.Sleep(750);
+                //UpdateManager.BeginInvoke((int)Math.Floor(lastSpell.Key.GetAbilityById(lastSpell.Value).CastPoint * 1000 - 100), () =>
                 {
                     ult.Cast(lastSpell.Key);
-                });
-                General.sleeper.Sleep(750);
-                return;
+                    return;
+                }//);
             }
 
             if (main.Id == lastSpell.Value || General.sleeper.Sleeping)
@@ -57,11 +57,12 @@ namespace RockRubick
 
             if (General.localHero.Distance2D(lastSpell.Key) < range)
             {
-                UpdateManager.BeginInvoke((int)Math.Floor(lastSpell.Key.GetAbilityById(lastSpell.Value).CastPoint * 1000), () =>
-                {
-                    ult.Cast(lastSpell.Key);
-                });
                 General.sleeper.Sleep(750);
+                //UpdateManager.BeginInvoke((int)Math.Floor(lastSpell.Key.GetAbilityById(lastSpell.Value).CastPoint * 1000 - 100), () =>
+                {
+                        ult.Cast(lastSpell.Key);
+                }//);
+
             }
         }
     }
