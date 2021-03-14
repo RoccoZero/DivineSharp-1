@@ -10,7 +10,7 @@ namespace RockRubick
 
         public static void MenuBootstrap()
         {
-            var rootmenu = MenuManager.CreateRootMenu("Rock.Rubick (BETA!)").SetHeroTexture(Divine.HeroId.npc_dota_hero_rubick);
+            var rootmenu = MenuManager.CreateRootMenu("Rock.Rubick").SetHeroTexture(Divine.HeroId.npc_dota_hero_rubick);
 
             RubickEnabled = rootmenu.CreateSwitcher("Spell Stealer").SetAbilityTexture(Divine.AbilityId.rubick_spell_steal);
 
