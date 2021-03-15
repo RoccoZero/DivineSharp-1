@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Utilities.Modules
 {
-    class AutoDust
+    internal class AutoDust
     {
         private readonly Hero localHero;
         private Item dust;

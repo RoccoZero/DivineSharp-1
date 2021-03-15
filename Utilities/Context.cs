@@ -11,7 +11,6 @@ namespace Utilities
         public readonly Antislark antislark;
         public readonly Creepblocker creepblock;
         public readonly AutoDust autoDust;
-        private readonly MaxBlinkRange maxBlinkRange;
 
         public Context()
         {
@@ -19,7 +18,6 @@ namespace Utilities
             antislark = new Antislark(this);
             creepblock = new Creepblocker(this);
             autoDust = new AutoDust(this);
-            maxBlinkRange = new MaxBlinkRange(this);
 
         }
         public void Dispose()
@@ -27,7 +25,6 @@ namespace Utilities
             Antislark.Dispose();
             Creepblocker.Dispose();
             AutoDust.Dispose();
-            MaxBlinkRange.Dispose();
         }
 
     }
